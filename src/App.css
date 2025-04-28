@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .App {
+  min-height: 100vh;
+  background-image: linear-gradient(
+      to bottom right,
+      rgba(126, 34, 206, 0.6),
+      rgba(217, 70, 239, 0.6)
+    ),
+    url("./assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+} */
