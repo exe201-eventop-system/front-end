@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Star, MapPin, Phone, Mail, Filter } from "lucide-react";
+import { Search, Star, MapPin, Phone, Mail } from "lucide-react";
 
 // Mock data
 const suppliers = [

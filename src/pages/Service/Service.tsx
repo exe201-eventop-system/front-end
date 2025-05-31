@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { RootState, AppDispatch } from '../../features/store'; 
-import { useParams } from 'react-router-dom';
+//import { useParams } from 'react-router-dom';
 // import { BlogDetail} from '../../features/Blogs/blogThunks';
 // import { clearSelectedBlog } from '../../features/Blogs/blogSlice';
 import { CalendarPlus, ShoppingCart, ArrowRightCircle, Star, Clock, MapPin, Users, Phone, Mail, Globe } from 'lucide-react';
@@ -49,7 +49,7 @@ const mockServiceDetails = {
 };
 
 const ServiceDetail = () => {
-  const { id } = useParams<{ id: string }>();
+ // const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState(0);
   // const dispatch = useDispatch<AppDispatch>();
 

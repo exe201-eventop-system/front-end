@@ -29,9 +29,9 @@ const serviceSlice = createSlice({
       .addCase(Services.pending, (state) => {
         state.loading = true;
       })
-      .addCase(Services.fulfilled, (state, action) => {
+      .addCase(Services.fulfilled, (state) => {
         state.loading = false;
-        state.services = action.payload;
+      //  state.services = action.payload;
       })
       .addCase(Services.rejected, (state, action) => {
         state.loading = false;
@@ -41,9 +41,9 @@ const serviceSlice = createSlice({
       .addCase(ServiceDetail.pending, (state) => {
         state.loading = true;
       })
-      .addCase(ServiceDetail.fulfilled, (state, action) => {
+      .addCase(ServiceDetail.fulfilled, (state) => {
         state.loading = false;
-        state.selectedBlog = action.payload; // Lưu blog chi tiết
+      //  state.selectedBlog = action.payload; // Lưu blog chi tiết
       })
       .addCase(ServiceDetail.rejected, (state, action) => {
         state.loading = false;
