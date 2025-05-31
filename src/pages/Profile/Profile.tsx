@@ -11,19 +11,14 @@ import {
   Bell,
   Settings,
   LogOut,
-  Clock,
-  Building2,
-  CheckCircle2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../features/store";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AppDispatch } from "../../features/store";
 import { User as UserType } from "../../types/User.type";
-import { GenericResponse } from "../../types/GenerictResponse";
 import axios from "axios";
 import defaultAvatar from "../../assets/avatar.svg";
 import { profile } from "../../features/Auth/authThunks";
@@ -35,41 +30,41 @@ interface UserProfile extends Omit<UserType, 'userName'> {
 }
 
 // Mock data for service history
-const mockServiceHistory = [
-  {
-    id: '1',
-    serviceName: 'Tổ Chức Sự Kiện',
-    supplierName: 'EventPro Solutions',
-    date: '2024-03-15',
-    startTime: '09:00',
-    endTime: '11:00',
-    status: 'completed',
-    location: 'Hà Nội',
-    price: 5000000
-  },
-  {
-    id: '2',
-    serviceName: 'Trang Trí Sân Khấu',
-    supplierName: 'Decor Plus',
-    date: '2024-03-20',
-    startTime: '13:00',
-    endTime: '15:00',
-    status: 'upcoming',
-    location: 'Hà Nội',
-    price: 3000000
-  },
-  {
-    id: '3',
-    serviceName: 'Âm Thanh Ánh Sáng',
-    supplierName: 'Sound & Light Pro',
-    date: '2024-02-28',
-    startTime: '15:00',
-    endTime: '17:00',
-    status: 'completed',
-    location: 'Hà Nội',
-    price: 4000000
-  }
-];
+// const mockServiceHistory = [
+//   {
+//     id: '1',
+//     serviceName: 'Tổ Chức Sự Kiện',
+//     supplierName: 'EventPro Solutions',
+//     date: '2024-03-15',
+//     startTime: '09:00',
+//     endTime: '11:00',
+//     status: 'completed',
+//     location: 'Hà Nội',
+//     price: 5000000
+//   },
+//   {
+//     id: '2',
+//     serviceName: 'Trang Trí Sân Khấu',
+//     supplierName: 'Decor Plus',
+//     date: '2024-03-20',
+//     startTime: '13:00',
+//     endTime: '15:00',
+//     status: 'upcoming',
+//     location: 'Hà Nội',
+//     price: 3000000
+//   },
+//   {
+//     id: '3',
+//     serviceName: 'Âm Thanh Ánh Sáng',
+//     supplierName: 'Sound & Light Pro',
+//     date: '2024-02-28',
+//     startTime: '15:00',
+//     endTime: '17:00',
+//     status: 'completed',
+//     location: 'Hà Nội',
+//     price: 4000000
+//   }
+// ];
 
 const Profile = () => {
   const navigate = useNavigate();

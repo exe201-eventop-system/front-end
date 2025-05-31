@@ -25,11 +25,11 @@ import History from '../pages/History/History.tsx';
 // Import new Supplier pages
 // import Statistics from '../pages/Supplier/Statistics.tsx';
 // import ServiceManagement from '../pages/Supplier/ServiceManagement.tsx';
-import ServiceRequests from '../pages/Supplier/ServiceRequests.tsx';
-import Feedback from '../pages/Supplier/Feedback.tsx';
-import Communication from '../pages/Supplier/Communication.tsx';
-import BlogManagement from '../pages/Supplier/BlogManagement.tsx';
-import Advertisement from '../pages/Supplier/Advertisement.tsx';
+// import ServiceRequests from '../pages/Supplier/ServiceRequests.tsx';
+// import Feedback from '../pages/Supplier/Feedback.tsx';
+// import Communication from '../pages/Supplier/Communication.tsx';
+// import BlogManagement from '../pages/Supplier/BlogManagement.tsx';
+// import Advertisement from '../pages/Supplier/Advertisement.tsx';
 
 const AppRoutes: React.FC = () => {
 
