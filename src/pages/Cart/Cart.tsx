@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../features/store";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../../features/store";
 import { CartItem } from "../../types/Cart.type";
 import { PaginatedList } from "../../components/PaginatedList";
 import { PaginationResult } from "../../types/PaginationResult.type";
@@ -40,7 +40,7 @@ const mockCart: CartItem[] = [
 ];
 
 const Cart = () => {
-    const dispatch = useDispatch<AppDispatch>();
+ //   const dispatch = useDispatch<AppDispatch>();
     const [cartItems, setCartItems] = useState<CartItem[]>(mockCart);
 
     const fetchCartData = useCallback(

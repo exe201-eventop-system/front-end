@@ -5,7 +5,6 @@ import Button from "../../../components/Button";
 import { PlaningStep1Request } from "../../../types/Planning.type";
 import { createPlanningStep1 } from '../../../features/Planning/planningThunks';
 import { AppDispatch } from '../../../features/store';
-import { getPlanning } from '../../../features/Planning/planningThunks';
 
 interface CreateEventModalProps {
   isOpen: boolean;
