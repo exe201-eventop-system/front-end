@@ -271,7 +271,7 @@ const ScheduleSection = () => {
                             </label>
                             <textarea
                                 className="w-full px-4 py-2 rounded-lg border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none"
-                                rows="3"
+                                rows={3}
                                 placeholder="Nhập ghi chú (nếu có)"
                             />
                         </div>
