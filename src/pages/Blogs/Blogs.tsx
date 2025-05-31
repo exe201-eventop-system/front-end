@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, User, Tag, Search } from "lucide-react";
+import { Calendar, Clock, Tag, Search } from "lucide-react";
 
 interface BlogPost {
   id: string;
