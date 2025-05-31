@@ -7,7 +7,7 @@ import backgroundAuth from "../../assets/backgroundAuth.jpg";
 import { RootState } from "../../features/store";
 import { switchAuthType } from "../../features/Auth/authSlice";
 import bannerLogin from "../../assets/bannerLogin.jpg";
-import bannerRegister from "../../assets/BanerRegister.jpg";
+import bannerRegister from "../../assets/banerRegister.jpg";
 import { useLocation } from "react-router-dom";
 const Auth = () => {
   const authType = useSelector((state: RootState) => state.auth.authType);
