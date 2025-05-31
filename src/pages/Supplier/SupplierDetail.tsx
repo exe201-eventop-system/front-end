@@ -106,12 +106,25 @@ const mockScheduleData = {
     ]
 };
 
+// Add type for slot
+interface TimeSlot {
+    startTime: string;
+    endTime: string;
+}
+
+interface BookedSlot extends TimeSlot {
+    id: string;
+    customerName: string;
+    eventName: string;
+    status: 'confirmed' | 'pending';
+}
+
 // Add new component for Schedule
 const ScheduleSection = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedSlot, setSelectedSlot] = useState(null);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 
-    const formatDate = (date) => {
+    const formatDate = (date: Date) => {
         return date.toLocaleDateString('vi-VN', {
             weekday: 'long',
             year: 'numeric',
@@ -132,11 +145,11 @@ const ScheduleSection = () => {
         setSelectedDate(newDate);
     };
 
-    const isSlotBooked = (startTime) => {
+    const isSlotBooked = (startTime: string) => {
         return mockScheduleData.bookedSlots.some(slot => slot.startTime === startTime);
     };
 
-    const getBookedSlotInfo = (startTime) => {
+    const getBookedSlotInfo = (startTime: string) => {
         return mockScheduleData.bookedSlots.find(slot => slot.startTime === startTime);
     };
 
@@ -174,8 +187,8 @@ const ScheduleSection = () => {
                                 key={index}
                                 onClick={() => setSelectedSlot(slot)}
                                 className={`w-full p-4 rounded-xl border-2 transition-all ${selectedSlot?.startTime === slot.startTime
-                                        ? 'border-purple-500 bg-purple-50'
-                                        : 'border-purple-100 hover:border-purple-300'
+                                    ? 'border-purple-500 bg-purple-50'
+                                    : 'border-purple-100 hover:border-purple-300'
                                     }`}
                             >
                                 <div className="flex items-center justify-between">
@@ -209,8 +222,8 @@ const ScheduleSection = () => {
                                         </span>
                                     </div>
                                     <span className={`text-sm font-medium px-2 py-1 rounded-full ${slot.status === 'confirmed'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-yellow-100 text-yellow-700'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-yellow-100 text-yellow-700'
                                         }`}>
                                         {slot.status === 'confirmed' ? 'Đã xác nhận' : 'Đang chờ'}
                                     </span>
@@ -285,8 +298,9 @@ const ScheduleSection = () => {
 };
 
 const SupplierDetail = () => {
-    const { id } = useParams<{ id: string }>();
-    const [selectedImage, setSelectedImage] = useState(0);
+    // Comment out unused id variable
+    // const { id } = useParams<{ id: string }>();
+    const [selectedImage, setSelectedImage] = useState<number>(0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-purple-100 pt-24 pb-12">

@@ -5,16 +5,15 @@ import { Search, Bell, Settings, LogOut, User } from 'lucide-react';
 import ProfilePicture from '../assets/avatar.svg';
 
 interface NavbarDashboardProps {
-  showSidebar: string;
   setShowSidebar: Dispatch<SetStateAction<string>>;
 }
 
-const NavbarDashBoard = ({ showSidebar, setShowSidebar }: NavbarDashboardProps) => {
+const NavbarDashBoard = ({ setShowSidebar }: NavbarDashboardProps) => {
   const location = useLocation().pathname;
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleSidebar = () => setShowSidebar('left-0');
-  const closeSidebar = () => setShowSidebar('-left-64');
+ // const closeSidebar = () => setShowSidebar('-left-64');
 
   const getPageTitle = () => {
     const path = location.split('/').pop() || 'dashboard';
