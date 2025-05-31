@@ -22,5 +22,4 @@ const BlogCard = ({ imageUrl, category, date, title, description }: BlogCardProp
     </div>
   );
 };
-g
 export default BlogCard;

@@ -3,14 +3,14 @@ import { Service } from '../../types/Services.type';
 import { Services, ServiceDetail } from './serviceThunks';
 
 interface ServiceState {
-  blogs: Service[];
+  services: Service[];
   loading: boolean;
   error: string | null;
   selectedBlog: Service | null;
 }
 
 const initialState: ServiceState = {
-  blogs: [],
+  services: [],
   loading: false,
   error: null,
   selectedBlog: null,
@@ -31,7 +31,7 @@ const serviceSlice = createSlice({
       })
       .addCase(Services.fulfilled, (state, action) => {
         state.loading = false;
-        state.blogs = action.payload;
+        state.services = action.payload;
       })
       .addCase(Services.rejected, (state, action) => {
         state.loading = false;
