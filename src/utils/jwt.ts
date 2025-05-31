@@ -6,14 +6,10 @@ export interface JwtPayload {
   email: string;
   role?: string;
   exp: number;
-  [key: string]: unknown ; 
+  [key: string]: unknown;
 }
 
-/**
- * Giải mã token JWT và trả về payload.
- * @param token Access token cần decode
- * @returns Thông tin người dùng từ token hoặc null nếu không hợp lệ
- */
+
 export const decodeToken = (token: string): JwtPayload | null => {
   try {
     return jwtDecode<JwtPayload>(token);
@@ -32,7 +28,13 @@ export const isTokenExpired = (token: string): boolean => {
   const decoded = decodeToken(token);
   if (!decoded) return true;
 
-  return decoded.exp * 1000 < Date.now(); // `exp` tính theo giây
+  const currentTime = Date.now();
+  if (decoded.exp * 1000 < currentTime) {
+    // Token đã hết hạn, xóa token
+    localStorage.removeItem('token');
+    return true;
+  }
+  return false;
 };
 
 /**

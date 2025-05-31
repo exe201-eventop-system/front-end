@@ -23,8 +23,13 @@ export function createGetThunk<ResponseType, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
+        console.log("🔹 [PlanningThunk] GET to:", url);
+        console.log(
+          "🔹 [PlanningThunk] Payload gửi đi:",
+          JSON.stringify(payload, null, 2)
+        );
         const res = await axiosInstance.get<GenericResponse<ResponseType>>(url, config);
-        console.log("data nè",res.data);
+        console.log("data nè", res.data);
         return res.data;
       } catch (err) {
         const error = err as unknown as {
@@ -53,23 +58,23 @@ export function createPostThunk<ResponseType = void, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
-        console.log("🔹 [PlanningThunk] POST to:", url);
-        console.log(
-          "🔹 [PlanningThunk] Payload gửi đi:",
-          JSON.stringify(payload, null, 2)
-        );
 
         const res = await axiosInstance.post<GenericResponse<ResponseType>>(
           url,
           payload,
           config
-        );  
-        console.log("data", res);
+        );       
         return res.data;
       } catch (err) {
         const error = err as unknown as {
           response?: { data?: { message?: string } };
         };
+        console.error("🔹 [PlanningThunk] Error details:", {
+          error,
+          response: error.response,
+          data: error.response?.data,
+          message: error.response?.data?.message
+        });
         const message = error.response?.data?.message || "POST request failed";
         options?.onError?.(message);
         console.error(message);

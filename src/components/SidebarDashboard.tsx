@@ -1,14 +1,35 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import NavbarDashBoard from "./NavbarDashBoard";
-import logo from "./../assets/logo.png"
+import logo from "./../assets/logo.png";
+import {
+  Home,
+  Settings,
+  Table,
+  Map,
+  User,
+  Calendar,
+  ShoppingCart,
+  Users,
+  BarChart2,
+  Bell
+} from "lucide-react";
+
 const SidebarDashboard = () => {
   const [showSidebar, setShowSidebar] = useState("-left-64");
 
-  const linkClass =
-    "flex items-center gap-4 text-sm text-gray-700 font-light px-4 py-3 rounded-lg";
-  const activeClass =
-    "bg-gradient-to-r from-fuchsia-500 to-cyan-400 scale-105 text-white shadow-md";
+  const linkClass = "flex items-center gap-4 text-sm text-gray-600 font-medium px-4 py-3 rounded-lg transition-all duration-200 hover:bg-gray-50";
+  const activeClass = "bg-gradient-to-r from-fuchsia-500 to-cyan-400 scale-105 text-white shadow-md ";
+
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+    { path: "/dashboard/events", label: "Sự kiện", icon: <Calendar size={20} /> },
+    { path: "/dashboard/orders", label: "Đơn hàng", icon: <ShoppingCart size={20} /> },
+    { path: "/dashboard/customers", label: "Khách hàng", icon: <Users size={20} /> },
+    { path: "/dashboard/analytics", label: "Thống kê", icon: <BarChart2 size={20} /> },
+    { path: "/dashboard/notifications", label: "Thông báo", icon: <Bell size={20} /> },
+    { path: "/dashboard/settings", label: "Cài đặt", icon: <Settings size={20} /> },
+  ];
 
   return (
     <>
@@ -16,80 +37,50 @@ const SidebarDashboard = () => {
       <div
         className={`h-screen fixed top-0 md:left-0 ${showSidebar} overflow-y-auto flex-col shadow-xl bg-white w-64 z-10 py-4 px-6 transition-all duration-300`}
       >
-        <div className="flex flex-col min-h-full relative">
-<a
-  href="https://material-tailwind.com?ref=mtd"
-  target="_blank"
-  rel="noreferrer"
-  className="flex items-center justify-center gap-2 w-full mt-2 text-lg font-semibold text-black transition-colors duration-200"
->
-  <img src={logo} alt="logo" className="h-8 w-auto" />
-  <span>Event Top</span>
-</a>
+        <div className="flex flex-col min-h-full">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-2 w-full mt-2 mb-8">
+            <img src={logo} alt="logo" className="h-8 w-auto" />
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              Event Top
+            </span>
+          </div>
 
+          {/* Navigation */}
+          <nav className="flex-1">
+            <ul className="space-y-2">
+              {menuItems.map((item) => (
+                <li key={item.path}>
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `${linkClass} ${isActive ? activeClass : ""}`
+                    }
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-          <hr className="my-4" />
-
-          <ul className="flex flex-col space-y-2 ">
-            <li>
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `${linkClass} ${isActive ? activeClass : ""}`
-                }
-              >
-                <span className="material-icons"></span>
-               <div className="font-medium">Dashboard</div> 
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/settings"
-                className={({ isActive }) =>
-                  `${linkClass} ${isActive ? activeClass : ""}`
-                }
-              >
-                <span className="material-icons"></span>
-                 <div className="font-medium">Settings</div>                
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/tables"
-                className={({ isActive }) =>
-                  `${linkClass} ${isActive ? activeClass : ""}`
-                }
-              >
-                <span className="material-icons"></span>
-                 <div className="font-medium">Tables</div> 
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/maps"
-                className={({ isActive }) =>
-                  `${linkClass} ${isActive ? activeClass : ""}`
-                }
-              >
-                <span className="material-icons"></span>
-                Maps
-              </NavLink>
-            </li>          
-            <li>
-              <a
-                href="https://demos.creative-tim.com/material-tailwind-kit-react/#/profile"
-                target="_blank"
-                rel="noreferrer"
-                className={linkClass}
-              >
-                <span className="material-icons"></span>
-                Profile Page
-              </a>
-            </li>
-          </ul>
+          {/* User Profile Section */}
+          <div className="mt-auto pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center text-white">
+                <User size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Admin User</p>
+                <p className="text-xs text-gray-500">admin@eventtop.com</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
   );
-}
+};
+
 export default SidebarDashboard;

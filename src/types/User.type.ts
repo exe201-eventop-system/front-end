@@ -4,3 +4,12 @@ export enum Role {
   Suplier, 
   Customer,
 }
+
+export interface User {
+  id: string;
+  email: string;
+  role: Role;
+  userName: string;
+  address: string;
+  avatar: string;
+    }

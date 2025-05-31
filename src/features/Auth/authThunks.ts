@@ -1,4 +1,4 @@
-import { createPostThunk } from "../genericsCreateThunk";
+import { createGetThunk, createPostThunk } from "../genericsCreateThunk";
 import {
   LoginRequest,
   LoginResponse,
@@ -18,6 +18,7 @@ import {
   ProvinceDetailResponse,
   DistrictDetailResponse,
 } from "../../types/Location.type";
+import { User } from "../../types/User.type";
 
 export const signUp = createPostThunk<LoginResponse, LoginRequest>(
   `auth/sign-up`,
@@ -55,9 +56,9 @@ export const register = createPostThunk<void, RegisterRequest>(
     onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
   }
 );
-export const profile = createPostThunk<LoginRequest, void>(
-  `auth/me`,
-  `auth/me`,
+export const profile = createGetThunk<User, void>(
+  `auth/profile`,
+  `auth/profile`,
   {
     onError: (msg) => toast.error(`Đăng nhập thất bại: ${msg}`),
   }

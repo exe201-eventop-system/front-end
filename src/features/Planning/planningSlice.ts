@@ -1,17 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createPlanningStep1, getPlanning } from './planningThunks';
+import { createPlanningStep1, getNumberPlaning, getPlanning } from './planningThunks';
 import { PlaningResponse } from '../../types/Planning.type';
 import { GenericResponse } from '../../types/GenerictResponse';
 import { PaginationResult } from '../../types/PaginationResult.type';
 
 interface PlanningState {
   plannings: PlaningResponse[];
+  number: number;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: PlanningState = {
   plannings: [],
+  number: 0,
   loading: false,
   error: null,
 };
@@ -33,8 +35,11 @@ const planningSlice = createSlice({
       })
       .addCase(createPlanningStep1.fulfilled, (state, action: PayloadAction<GenericResponse<PlaningResponse>>) => {
         state.loading = false;
+        console.log("🔹 [PlanningSlice] Received create response:", action.payload);
         if (action.payload.data) {
-          state.plannings.push(action.payload.data);
+          console.log("🔹 [PlanningSlice] Current plannings:", state.plannings);
+          state.plannings = [action.payload.data, ...state.plannings];
+          console.log("🔹 [PlanningSlice] Updated plannings:", state.plannings);
         }
       })
       .addCase(createPlanningStep1.rejected, (state, action) => {
@@ -47,7 +52,7 @@ const planningSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      
+
       .addCase(getPlanning.fulfilled, (state, action: PayloadAction<GenericResponse<PaginationResult<PlaningResponse>>>) => {
         state.loading = false;
         state.plannings = action.payload.data?.content || [];
@@ -55,6 +60,12 @@ const planningSlice = createSlice({
       .addCase(getPlanning.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? 'Failed to fetch planning list';
+      })
+
+
+      .addCase(getNumberPlaning.fulfilled, (state, action: PayloadAction<GenericResponse<number>>) => {
+        state.loading = false;
+        state.number = action.payload.data || 0;
       });
   },
 });

@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import {
   FaFacebookF,
-  FaInstagram,
-  FaTwitter,
-  FaGithub,
+  FaTiktok,
   FaYoutube,
   FaPhoneAlt,
   FaEnvelope,
@@ -14,9 +12,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   const socialLinks = [
     { icon: FaFacebookF, href: "#", label: "Facebook" },
-    { icon: FaInstagram, href: "#", label: "Instagram" },
-    { icon: FaTwitter, href: "#", label: "Twitter" },
-    { icon: FaGithub, href: "#", label: "GitHub" },
+    { icon: FaTiktok, href: "#", label: "Tiktok" },
     { icon: FaYoutube, href: "#", label: "YouTube" },
   ];
 
@@ -36,7 +32,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-purple-900 via-violet-900 to-fuchsia-900 text-white">
+    <footer className="relative bg-gray-900 text-white">
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -44,7 +40,7 @@ const Footer = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-violet-500/30 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <motion.div

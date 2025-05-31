@@ -35,3 +35,11 @@ export const getAPlanning = createGetThunk<PlaningResponse, { planningId: string
     onError: (msg) => toast.error(`Không thể lấy thông tin chi tiết: ${msg}`),
   }
 );
+export const getNumberPlaning = createGetThunk<number, void>(
+  "planning/number",
+  "planning",
+  {
+    buildUrl: (payload) => `planning/number`,
+    onError: (msg) => toast.error(`Không thể lấy thông tin chi tiết: ${msg}`),
+  }
+);

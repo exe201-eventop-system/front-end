@@ -21,3 +21,6 @@ export interface PlaningResponse {
   updateDate: string;
 }
 
+export interface numberPlaning {
+  number: number;
+}

@@ -5,12 +5,14 @@ import {
   fetchDistricts,
   fetchProvinces,
   fetchWards,
+  profile,
 } from "./authThunks";
 import {
   saveToLocalStorage,
   removeFromLocalStorage,
   getFromLocalStorage,
 } from "../../utils/localStorageHelper";
+import { Role, User } from "../../types/User.type";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -21,6 +23,7 @@ interface AuthState {
   provinces: { code: number; name: string }[];
   districts: { code: number; name: string }[];
   wards: { code: number; name: string }[];
+  user: User;
 }
 
 const initialState: AuthState = {
@@ -32,6 +35,14 @@ const initialState: AuthState = {
   provinces: [],
   districts: [],
   wards: [],
+  user: {
+    id: "",
+    userName: "",
+    email: "",
+    role: Role.Customer,
+    address: "",
+    avatar: "",
+  },
 };
 
 const authSlice = createSlice({
@@ -109,6 +120,16 @@ const authSlice = createSlice({
       })
       .addCase(fetchWards.fulfilled, (state, action) => {
         state.wards = action.payload;
+      })
+      .addCase(profile.fulfilled, (state, action) => {
+        state.user = action.payload.data ?? {
+          id: "",
+          userName: "",
+          email: "",
+          role: Role.Customer,
+          address: "",
+          avatar: "",
+        };
       });
   },
 });
