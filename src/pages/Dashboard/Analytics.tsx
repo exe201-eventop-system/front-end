@@ -1,4 +1,4 @@
-import { useState } from 'react';
+//import { useState } from 'react';
 import {
     BarChart,
     Bar,
@@ -12,7 +12,7 @@ import {
     Line,
     PieChart,
     Pie,
-    Cell
+   // Cell
 } from 'recharts';
 import {
     TrendingUp,
@@ -46,7 +46,7 @@ const eventTypes = [
     { name: 'Sự kiện công ty', value: 200 },
 ];
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+//const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const customerSatisfaction = [
     { name: 'T1', satisfaction: 4.2 },
@@ -58,7 +58,7 @@ const customerSatisfaction = [
 ];
 
 const Analytics = () => {
-    const [timeRange, setTimeRange] = useState('month');
+    //const [timeRange, setTimeRange] = useState('month');
 
     const stats = [
         {
@@ -195,12 +195,12 @@ const Analytics = () => {
                                         `${name} ${(percent * 100).toFixed(0)}%`
                                     }
                                 >
-                                    {eventTypes.map((entry, index) => (
+                                    {/* {eventTypes.map((entry, index) => (
                                         <Cell
                                             key={`cell-${index}`}
                                             fill={COLORS[index % COLORS.length]}
                                         />
-                                    ))}
+                                    ))} */}
                                 </Pie>
                                 <Tooltip />
                             </PieChart>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, MapPin, Building2, CheckCircle2, XCircle, Clock as ClockIcon, ChevronRight, Search, Filter, ArrowUpDown } from 'lucide-react';
+import { Calendar, Clock, MapPin, Building2, Clock as  ChevronRight, Search, ArrowUpDown } from 'lucide-react';
 
 // Mock data for booking history
 const mockBookingHistory = [
@@ -51,7 +51,7 @@ const mockBookingHistory = [
 const History: React.FC = () => {
     const [filter, setFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+    //const [setSelectedBooking] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<'date' | 'price'>('date');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
@@ -260,7 +260,7 @@ const History: React.FC = () => {
                                                 <motion.button
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    onClick={() => setSelectedBooking(booking.id)}
+                                                   // onClick={() => setSelectedBooking(booking.id)}
                                                     className="flex items-center gap-2 text-purple-600 hover:text-purple-800 font-medium text-sm transition-colors"
                                                 >
                                                     Xem chi tiết

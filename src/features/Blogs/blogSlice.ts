@@ -32,7 +32,7 @@ const blogSlice = createSlice({
       })
       .addCase(Blogs.fulfilled, (state, action) => {
         state.loading = false;
-        state.blogs = action.payload;
+       // state.blogs = action.payload.data;
       })
       .addCase(Blogs.rejected, (state, action) => {
         state.loading = false;
@@ -44,7 +44,7 @@ const blogSlice = createSlice({
       })
       .addCase(BlogDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedBlog = action.payload; // Lưu blog chi tiết
+        // state.selectedBlog = action.payload.data; // Lưu blog chi tiết
       })
       .addCase(BlogDetail.rejected, (state, action) => {
         state.loading = false;

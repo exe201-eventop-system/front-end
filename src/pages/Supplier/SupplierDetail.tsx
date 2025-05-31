@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { Star, MapPin, Phone, Mail, Globe, Users, Calendar, Award, Building2, Clock, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Mock data for supplier details
@@ -112,12 +111,12 @@ interface TimeSlot {
     endTime: string;
 }
 
-interface BookedSlot extends TimeSlot {
-    id: string;
-    customerName: string;
-    eventName: string;
-    status: 'confirmed' | 'pending';
-}
+// interface BookedSlot extends TimeSlot {
+//     id: string;
+//     customerName: string;
+//     eventName: string;
+//     status: 'confirmed' | 'pending';
+// }
 
 // Add new component for Schedule
 const ScheduleSection = () => {
@@ -145,13 +144,13 @@ const ScheduleSection = () => {
         setSelectedDate(newDate);
     };
 
-    const isSlotBooked = (startTime: string) => {
-        return mockScheduleData.bookedSlots.some(slot => slot.startTime === startTime);
-    };
+    // const isSlotBooked = (startTime: string) => {
+    //     return mockScheduleData.bookedSlots.some(slot => slot.startTime === startTime);
+    // };
 
-    const getBookedSlotInfo = (startTime: string) => {
-        return mockScheduleData.bookedSlots.find(slot => slot.startTime === startTime);
-    };
+    // const getBookedSlotInfo = (startTime: string) => {
+    //     return mockScheduleData.bookedSlots.find(slot => slot.startTime === startTime);
+    // };
 
     return (
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">

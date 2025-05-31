@@ -5,8 +5,6 @@ import logo from "./../assets/logo.png";
 import {
   Home,
   Settings,
-  Table,
-  Map,
   User,
   Calendar,
   ShoppingCart,
@@ -33,7 +31,7 @@ const SidebarDashboard = () => {
 
   return (
     <>
-      <NavbarDashBoard showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <NavbarDashBoard  setShowSidebar={setShowSidebar} />
       <div
         className={`h-screen fixed top-0 md:left-0 ${showSidebar} overflow-y-auto flex-col shadow-xl bg-white w-64 z-10 py-4 px-6 transition-all duration-300`}
       >

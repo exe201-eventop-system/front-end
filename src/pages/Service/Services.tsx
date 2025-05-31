@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../features/store';
+import {  useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { RootState, AppDispatch } from '../../features/store';
 // import { Services } from '../../features/Services/serviceThunks';
 import { Link } from 'react-router-dom';
 import { CalendarPlus, ShoppingCart, ArrowRightCircle, Search, Filter, X, Star, MapPin } from 'lucide-react';
