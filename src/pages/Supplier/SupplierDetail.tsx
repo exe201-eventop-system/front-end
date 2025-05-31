@@ -144,6 +144,7 @@ const ScheduleSection = () => {
         setSelectedDate(newDate);
     };
 
+    
     // const isSlotBooked = (startTime: string) => {
     //     return mockScheduleData.bookedSlots.some(slot => slot.startTime === startTime);
     // };
