@@ -12,7 +12,7 @@ interface ScheduleIconProps {
 }
 
 const ScheduleIcon = ({ className = "" }: ScheduleIconProps) => {
-  const { number } = useSelector((state: RootState) => state.planning);
+  const { totalOfPlannings } = useSelector((state: RootState) => state.planning);
   const location = useLocation();
   const isPlanningPage = location.pathname === "/planning";
   const dispatch = useDispatch<AppDispatch>();
@@ -29,9 +29,9 @@ const ScheduleIcon = ({ className = "" }: ScheduleIconProps) => {
           : ""
           }`}
       />
-      {number > 0 && (
+      {totalOfPlannings > 0 && (
         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-          {number}
+          {totalOfPlannings}
         </span>
       )}
     </div>

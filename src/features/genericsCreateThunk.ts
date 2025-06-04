@@ -9,6 +9,7 @@ interface ThunkOptions<RequestType> {
   onError?: (message: string) => void;
 }
 
+
 // ===============================
 // Generic GET
 // ===============================
@@ -23,11 +24,6 @@ export function createGetThunk<ResponseType, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
-        console.log("🔹 [PlanningThunk] GET to:", url);
-        console.log(
-          "🔹 [PlanningThunk] Payload gửi đi:",
-          JSON.stringify(payload, null, 2)
-        );
         const res = await axiosInstance.get<GenericResponse<ResponseType>>(url, config);
         console.log("data nè", res.data);
         return res.data;
@@ -58,12 +54,11 @@ export function createPostThunk<ResponseType = void, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
-
         const res = await axiosInstance.post<GenericResponse<ResponseType>>(
           url,
           payload,
           config
-        );       
+        );
         return res.data;
       } catch (err) {
         const error = err as unknown as {
@@ -99,6 +94,7 @@ export function createPutThunk<ResponseType, RequestType = void>(
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
         const res = await axiosInstance.put<GenericResponse<ResponseType>>(url, payload, config);
+        console.log("data nè nha:", res.data.data);
         return res.data;
       } catch (err) {
         const error = err as unknown as {
@@ -160,6 +156,12 @@ export function createDeleteThunk<ResponseType, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
+
+        // ✅ Log thông tin đã truyền đi
+        console.log("[DELETE Thunk] Payload:", payload);
+        console.log("[DELETE Thunk] URL:", url);
+        console.log("[DELETE Thunk] Config:", config);
+
         const res = await axiosInstance.delete<GenericResponse<ResponseType>>(url, config);
         return res.data;
       } catch (err) {
@@ -167,8 +169,10 @@ export function createDeleteThunk<ResponseType, RequestType = void>(
           response?: { data?: { message?: string } };
         };
         const message = error.response?.data?.message || "DELETE request failed";
+
         options?.onError?.(message);
-        console.error(message);
+        console.error("[DELETE Thunk] Error:", message);
+
         return rejectWithValue(message);
       }
     }

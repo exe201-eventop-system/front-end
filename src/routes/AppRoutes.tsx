@@ -21,7 +21,7 @@ import Supplier from '../pages/Supplier/Supplier.tsx';
 import Analytics from '../pages/Dashboard/Analytics.tsx';
 import SupplierDetail from '../pages/Supplier/SupplierDetail.tsx';
 import History from '../pages/History/History.tsx';
-
+import AIPlanning from '../pages/Home/component/AIPlanning.tsx';
 // Import new Supplier pages
 // import Statistics from '../pages/Supplier/Statistics.tsx';
 // import ServiceManagement from '../pages/Supplier/ServiceManagement.tsx';
@@ -47,6 +47,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/service/:id" element={<MainLayout><Service /></MainLayout>} />
         <Route path="/confirm" element={<ConfirmEmailPage />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/home/component/AIPlanning" element={<AIPlanning />} />
         <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
         <Route path="/suppliers" element={<MainLayout><Supplier /></MainLayout>} />
         <Route path="/supplier/:id" element={<MainLayout><SupplierDetail /></MainLayout>} />

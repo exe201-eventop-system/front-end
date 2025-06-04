@@ -3,12 +3,14 @@ import authReducer from './Auth/authSlice';
 import blogReducer from './Blogs/blogSlice';
 import serviceReducer from './Services/serviceSlice'
 import planningReducer from './Planning/planningSlice'
+import cartReducer from './Cart/cartSlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     blog: blogReducer,
     service: serviceReducer,
-    planning: planningReducer
+    planning: planningReducer,
+    cart: cartReducer
   },
 });
 

@@ -13,7 +13,7 @@ const Planning = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}  
+      {/* Hero Section */}
       <div className="relative h-[60vh] overflow-hidden">
         <BackgroundSession />
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm ">
@@ -47,7 +47,8 @@ const Planning = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
               Danh Sách Sự Kiện
             </h2>
-            <Button
+            <Button 
+            color="purple-white"
               isActive={activeTab.includes("planning")}
               onClick={() => setShowModal(true)}
             >

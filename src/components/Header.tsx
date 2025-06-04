@@ -61,6 +61,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-4">
             {mainMenuItems.map((item) => (
               <Button
+              color="gradient"
                 key={item.path}
                 to={item.path}
                 isActive={isActive(item.path)}

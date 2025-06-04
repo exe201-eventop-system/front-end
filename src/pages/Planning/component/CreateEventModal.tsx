@@ -26,15 +26,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
      await dispatch(createPlanningStep1(data)).unwrap();
       onClose();
-      // Reset form
       setEventName("");
       setDescription("");
-    } catch (error) {
-      console.error("Failed to create event:", error);
-    }
   };
 
   return (
