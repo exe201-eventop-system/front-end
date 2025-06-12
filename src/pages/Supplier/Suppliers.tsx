@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Star, MapPin, Phone, Mail, SlidersHorizontal } from "lucide-react";
+import { Search, Star, MapPin, SlidersHorizontal } from "lucide-react";
 import NavButton from "../../components/Button";
 import { suppliers } from "../../data/suppliers";
 import FilterSidebar from "./Component/FilterSidebar";
