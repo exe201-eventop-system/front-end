@@ -1,10 +1,12 @@
-import {  useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { RootState, AppDispatch } from '../../features/store'; 
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../features/store';
 //import { useParams } from 'react-router-dom';
 // import { BlogDetail} from '../../features/Blogs/blogThunks';
 // import { clearSelectedBlog } from '../../features/Blogs/blogSlice';
 import { CalendarPlus, ShoppingCart, ArrowRightCircle, Star, Clock, MapPin, Users, Phone, Mail, Globe } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { addItemToCart } from '../../features/Cart/cartThunk';
 
 // Mock data for service details
 const mockServiceDetails = {
@@ -49,7 +51,16 @@ const mockServiceDetails = {
 };
 
 const ServiceDetail = () => {
- // const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+  const { id } = useParams();
+
+  console.log(id);
+  const addToCart = () => {
+    if (id) {
+      dispatch(addItemToCart(id)).unwrap();
+    }
+  }
+  // const { id } = useParams<{ id: string }>();
   const [selectedImage, setSelectedImage] = useState(0);
   // const dispatch = useDispatch<AppDispatch>();
 
@@ -211,7 +222,7 @@ const ServiceDetail = () => {
               </div>
 
               <div className="space-y-4">
-                <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold py-3 rounded-xl transition">
+                <button onClick={addToCart} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold py-3 rounded-xl transition">
                   <CalendarPlus size={20} />
                   Đặt lịch ngay
                 </button>

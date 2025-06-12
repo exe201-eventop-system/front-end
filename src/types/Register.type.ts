@@ -15,7 +15,6 @@ export interface URL {
 }
 export interface ConfirmEmailResponse {
   access_token: string;
-  refresh_token: string;
 }
 export interface RegisterRequestInput {
   email: string;

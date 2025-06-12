@@ -25,6 +25,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role")
     setShowProfileMenu(false);
     navigate("/auth");
   };
@@ -53,7 +54,7 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <img src={logo} alt="logo" className="h-8 w-auto" />
-              <span className="text-xl font-bold text-white">Event Top</span>
+              <span className="text-xl font-bold text-white">EvenTop</span>
             </Link>
           </div>
 
@@ -61,7 +62,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-4">
             {mainMenuItems.map((item) => (
               <Button
-              color="gradient"
+                color="gradient"
                 key={item.path}
                 to={item.path}
                 isActive={isActive(item.path)}
@@ -83,11 +84,11 @@ const Header = () => {
                   <span>Tài khoản</span>
                 </button>
                 {showAuthOptions && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                  <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2">
                     <Link
                       to="/auth"
                       state={{ authType: "login" }}
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-2 py-1 text-gray-800 hover:bg-gray-100"
                       onClick={() => setShowAuthOptions(false)}
                     >
                       Đăng nhập
@@ -95,7 +96,7 @@ const Header = () => {
                     <Link
                       to="/auth"
                       state={{ authType: "register" }}
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-2 py-1 text-gray-800 hover:bg-gray-100"
                       onClick={() => setShowAuthOptions(false)}
                     >
                       Đăng ký
@@ -105,6 +106,13 @@ const Header = () => {
               </div>
             ) : (
               <>
+              
+                {/* <Link
+                  to="/planning"
+                  className="text-white hover:text-gray-300 transition-colors"
+                >
+                  <NotificationIcon className="h-6 w-6" />
+                </Link> */}
                 <Link
                   to="/planning"
                   className="text-white hover:text-gray-300 transition-colors"

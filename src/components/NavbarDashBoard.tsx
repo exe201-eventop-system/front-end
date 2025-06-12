@@ -3,17 +3,21 @@ import { useState } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { Search, Bell, Settings, LogOut, User } from 'lucide-react';
 import ProfilePicture from '../assets/avatar.svg';
-
+import { useNavigate } from "react-router-dom";
 interface NavbarDashboardProps {
   setShowSidebar: Dispatch<SetStateAction<string>>;
 }
 
 const NavbarDashBoard = ({ setShowSidebar }: NavbarDashboardProps) => {
   const location = useLocation().pathname;
+  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role")
+    navigate("/auth");
+  };
   const toggleSidebar = () => setShowSidebar('left-0');
- // const closeSidebar = () => setShowSidebar('-left-64');
 
   const getPageTitle = () => {
     const path = location.split('/').pop() || 'dashboard';
@@ -98,7 +102,7 @@ const NavbarDashBoard = ({ setShowSidebar }: NavbarDashboardProps) => {
                   <hr className="my-2" />
                   <button
                     onClick={() => {
-                      // Handle logout
+                      handleLogout();
                       setDropdownOpen(false);
                     }}
                     className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"

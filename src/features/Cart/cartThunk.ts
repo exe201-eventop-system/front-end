@@ -1,4 +1,4 @@
-import {  createGetThunk } from "../genericsCreateThunk";
+import { createGetThunk, createPostThunk } from "../genericsCreateThunk";
 import {
     PlaningStep1Request,
     PlaningResponse,
@@ -6,6 +6,13 @@ import {
 import { toast } from "react-toastify";
 //import { PaginationResult } from "../../types/PaginationResult.type";
 
+export const addItemToCart = createPostThunk<number, string>(
+    "cart/item",
+    "cart/item",
+    {
+        onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
+    }
+);
 export const getAllCart = createGetThunk<PlaningResponse, PlaningStep1Request>(
     "cart",
     "cart",

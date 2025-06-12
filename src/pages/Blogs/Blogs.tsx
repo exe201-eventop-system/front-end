@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Tag, Search } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
 
 interface BlogPost {
   id: string;
@@ -184,28 +184,6 @@ const Blogs = () => {
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4" />
                     <span>{blog.date}</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{blog.readTime}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Tag className="w-4 h-4" />
-                      <span>{blog.tags[0]}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="flex items-center space-x-1">
-                      <span className="text-purple-600">{blog.likes}</span>
-                      <span>lượt thích</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <span className="text-purple-600">{blog.comments}</span>
-                      <span>bình luận</span>
-                    </span>
                   </div>
                 </div>
               </div>

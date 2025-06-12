@@ -76,6 +76,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
             Hủy
           </button>
           <Button
+          color="purple-white"
             typeButon="submit"
             isActive={true}
           >

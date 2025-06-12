@@ -54,6 +54,10 @@ export function createPostThunk<ResponseType = void, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
+        console.groupCollapsed(`[POST THUNK] ${typePrefix}`);
+        console.log("🔹 URL:", url);
+        console.log("🔹 Payload:", payload);
+        console.log("🔹 Config:", config);
         const res = await axiosInstance.post<GenericResponse<ResponseType>>(
           url,
           payload,

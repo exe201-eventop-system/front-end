@@ -3,6 +3,11 @@ import { useState } from "react";
 const TOPICS = ["Event", "Wedding", "Birthday", "Conference"];
 const STYLES = ["Search", "Modern", "Classic", "Minimal"];
 
+interface AIResult {
+    plan: string;
+    services: string[];
+}
+
 export default function AIPlanning() {
     const [form, setForm] = useState({
         title: "",
@@ -16,7 +21,7 @@ export default function AIPlanning() {
         describe: ""
     });
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<unknown>(null);
+    const [result, setResult] = useState<AIResult | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -148,15 +153,19 @@ export default function AIPlanning() {
             {result && (
                 <div className="w-full max-w-4xl mt-8 bg-purple-50 rounded-xl shadow p-6 border border-purple-100">
                     <h2 className="text-2xl font-bold mb-4 text-purple-700">Kế hoạch AI đề xuất</h2>
-                    <p className="mb-4">{result.plan}</p>
-                    {result.services.length > 0 && (
-                        <>
-                            <h3 className="font-semibold mb-2">Gợi ý dịch vụ:</h3>
-                            <ul className="list-disc pl-6">
-                                {result.services.map((s: string, i: number) => <li key={i}>{s}</li>)}
-                            </ul>
-                        </>
-                    )}
+                    <div className="prose max-w-none">
+                        <div className="whitespace-pre-wrap mb-6">{result.plan}</div>
+                        {result.services.length > 0 && (
+                            <>
+                                <h3 className="text-xl font-semibold mb-3 text-purple-600">Gợi ý dịch vụ:</h3>
+                                <ul className="list-disc pl-6 space-y-2">
+                                    {result.services.map((service, index) => (
+                                        <li key={index} className="text-gray-700">{service}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

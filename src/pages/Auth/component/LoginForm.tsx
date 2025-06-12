@@ -7,11 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate, Link } from "react-router-dom";
 
 import logo from "../../../assets/logo.png";
-import { signUp, signInWithGoogle } from "../../../features/Auth/authThunks";
+import {  signUpWithGoogle, signIn } from "../../../features/Auth/authThunks";
 import { loginSchema } from "../../../features/Auth/validation/loginSchema";
 import type { LoginRequest } from "../../../types/Login.type";
 import type { AppDispatch } from "../../../features/store";
-//import { decodeToken } from "../../../utils/jwt";
+import { UserRole } from "../../../types/User.type";
 const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -32,12 +32,16 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
   const onSubmit = async (data: LoginRequest) => {
     setStatus("pending");
     try {
-      const action = await dispatch(signUp(data));
-      console.log("neg", action);
-      if (signUp.fulfilled.match(action)) {
+      const action = await dispatch(signIn(data));
+      if (signIn.fulfilled.match(action)) {
         setStatus("success");
-        // console.log("detoken:", decodeToken(token));
-        navigate("/", { replace: true });
+        let role = localStorage.getItem("user_role");
+        if (role == UserRole.Customer) {
+          navigate("/", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
+
       } else {
         setStatus("error");
         console.error("Login failed:", action.payload);
@@ -48,7 +52,7 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
     }
   };
   const handleGoogleLogin = async () => {
-    await dispatch(signInWithGoogle());
+    await dispatch(signUpWithGoogle());
   };
   return (
     <div className="text-white">

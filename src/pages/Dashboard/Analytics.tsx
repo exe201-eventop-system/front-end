@@ -12,7 +12,7 @@ import {
     Line,
     PieChart,
     Pie,
-   // Cell
+    // Cell
 } from 'recharts';
 import {
     TrendingUp,
@@ -76,6 +76,13 @@ const Analytics = () => {
             icon: <Users className="h-6 w-6" />,
         },
         {
+            title: 'Nhà cung cấp',
+            value: '245',
+            change: '+8.2%',
+            trend: 'up',
+            icon: <Users className="h-6 w-6" />,
+        },
+        {
             title: 'Sự kiện',
             value: '120',
             change: '-2.4%',
@@ -100,7 +107,7 @@ const Analytics = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 {stats.map((stat, index) => (
                     <div
                         key={index}

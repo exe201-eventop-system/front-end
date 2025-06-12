@@ -5,44 +5,31 @@ import {
   fetchDistricts,
   fetchProvinces,
   fetchWards,
-  profile,
+  signIn,
 } from "./authThunks";
-import {
-  saveToLocalStorage,
-  removeFromLocalStorage,
-  getFromLocalStorage,
-} from "../../utils/localStorageHelper";
-import { Role, User } from "../../types/User.type";
+import { UserRole } from "../../types/User.type";
+import { JwtHelper } from "../../utils/jwt/JwtHelper";
 
 interface AuthState {
   isAuthenticated: boolean;
   access_token: string | null;
-  refresh_token: string | null;
+  isLoading?: boolean;
   error: string | null;
   authType: "login" | "register";
   provinces: { code: number; name: string }[];
   districts: { code: number; name: string }[];
   wards: { code: number; name: string }[];
-  user: User;
 }
 
 const initialState: AuthState = {
-  isAuthenticated: getFromLocalStorage("access_token") !== null,
-  access_token: getFromLocalStorage("access_token"),
-  refresh_token: getFromLocalStorage("refresh_token"),
+  isAuthenticated: localStorage.getItem("access_token") !== null,
+  access_token: localStorage.getItem("access_token"),
   authType: "login",
+  isLoading: false,
   error: null,
   provinces: [],
   districts: [],
   wards: [],
-  user: {
-    id: "",
-    userName: "",
-    email: "",
-    role: Role.Customer,
-    address: "",
-    avatar: "",
-  },
 };
 
 const authSlice = createSlice({
@@ -52,10 +39,9 @@ const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.access_token = null;
-      state.refresh_token = null;
       state.error = null;
-      removeFromLocalStorage("access_token");
-      removeFromLocalStorage("refresh_token");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
     },
     setAuthType: (state, action) => {
       state.authType = action.payload;
@@ -73,43 +59,57 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(signUp.pending, (state) => {
+      .addCase(signIn.pending, (state) => {
         state.error = null;
       })
-      .addCase(signUp.fulfilled, (state, action) => {
+      .addCase(signIn.fulfilled, (state, action) => {
         state.isAuthenticated = true;
-        saveToLocalStorage(
-          "access_token",
-          action.payload.data?.access_token ?? ""
-        );
-        saveToLocalStorage(
-          "refresh_token",
-          action.payload.data?.refresh_token ?? ""
-        );
+      
+        const token = action.payload.data?.access_token ?? "";
+        localStorage.setItem("access_token", token);
+      
+        const helper = new JwtHelper(token);
+        const payload = helper.getPayload();
+      
+        const roleFromToken = payload?.Role;
+      
+        const isValidRole = Object.values(UserRole).includes(roleFromToken as UserRole);
+      
+        const roleToStore = isValidRole ? (roleFromToken as UserRole) : null;
+      
+        localStorage.setItem("user_role", roleToStore ?? "");
+
+      
+
       })
+      
+
       .addCase(signUp.rejected, (state, action) => {
         state.isAuthenticated = false;
         state.access_token = null;
-        state.refresh_token = null;
         state.error = action.payload ?? "Unknown error";
       })
 
       // Xử lý confirmEmail
       .addCase(confirmEmail.fulfilled, (state, action) => {
+        const token = action.payload.data?.access_token ?? "";
+
         state.isAuthenticated = true;
-        saveToLocalStorage(
-          "access_token",
-          action.payload.data?.access_token ?? ""
-        );
-        saveToLocalStorage(
-          "refresh_token",
-          action.payload.data?.refresh_token ?? ""
-        );
+        localStorage.setItem("access_token", token);
+
+
+        const helper = new JwtHelper(token);
+        const payload = helper.getPayload();
+
+        const roleFromToken = payload?.role;
+        const isValidRole = Object.values(UserRole).includes(roleFromToken as UserRole);
+        const roleToStore = isValidRole ? (roleFromToken as UserRole) : null;
+
+        localStorage.setItem("user_role", roleToStore ?? "");
       })
       .addCase(confirmEmail.rejected, (state, action) => {
         state.isAuthenticated = false;
         state.access_token = null;
-        state.refresh_token = null;
         state.error = action.payload ?? "Xác nhận email thất bại";
       })
       .addCase(fetchProvinces.fulfilled, (state, action) => {
@@ -121,16 +121,7 @@ const authSlice = createSlice({
       .addCase(fetchWards.fulfilled, (state, action) => {
         state.wards = action.payload;
       })
-      .addCase(profile.fulfilled, (state, action) => {
-        state.user = action.payload.data ?? {
-          id: "",
-          userName: "",
-          email: "",
-          role: Role.Customer,
-          address: "",
-          avatar: "",
-        };
-      });
+
   },
 });
 

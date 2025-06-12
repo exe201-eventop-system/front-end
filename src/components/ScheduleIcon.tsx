@@ -30,7 +30,7 @@ const ScheduleIcon = ({ className = "" }: ScheduleIconProps) => {
           }`}
       />
       {totalOfPlannings > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
           {totalOfPlannings}
         </span>
       )}

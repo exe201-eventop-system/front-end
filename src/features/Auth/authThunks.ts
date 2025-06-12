@@ -20,9 +20,9 @@ import {
 } from "../../types/Location.type";
 import { User } from "../../types/User.type";
 
-export const signUp = createPostThunk<LoginResponse, LoginRequest>(
-  `auth/sign-up`,
-  `auth/sign-up`,
+export const signIn = createPostThunk<LoginResponse, LoginRequest>(
+  `auth/sign-in`,
+  `auth/sign-in`,
   {
     onError: (msg) => toast.error(`Đăng nhập thất bại: ${msg}`),
   }
@@ -34,31 +34,31 @@ export const sentOTP = createPostThunk<void, OPTRequest>(
     onError: (msg) => toast.error(`Đăng nhập thất bại: ${msg}`),
   }
 );
-export const signInWithGoogle = createAsyncThunk<void, void>(
-  "auth/signin-google",
+export const signUpWithGoogle = createAsyncThunk<void, void>(
+  "auth/signUp-google",
   async (_, { rejectWithValue }) => {
     try {
       const gatewayUrl = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
       window.location.href = `${gatewayUrl}/auth/signin-google`;
 
       // Trả về promise không bao giờ resolve để ngăn redux xử lý tiếp
-      return new Promise(() => {});
+      return new Promise(() => { });
     } catch (error) {
       console.error("Error initiating Google login:", error);
       return rejectWithValue("Lỗi khởi tạo đăng nhập Google");
     }
   }
 );
-export const register = createPostThunk<void, RegisterRequest>(
-  "auth/sign-in",
-  "auth/sign-in",
+export const signUp = createPostThunk<void, RegisterRequest>(
+  "auth/sign-up",
+  "auth/sign-up",
   {
     onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
   }
 );
 export const profile = createGetThunk<User, void>(
-  `auth/profile`,
-  `auth/profile`,
+  `user`,
+  `user`,
   {
     onError: (msg) => toast.error(`Đăng nhập thất bại: ${msg}`),
   }

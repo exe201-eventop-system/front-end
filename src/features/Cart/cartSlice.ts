@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartItem } from '../../types/Cart.type';
-import { getTotalCart } from './cartThunk';
+import { getTotalCart, addItemToCart } from './cartThunk';
 
 interface CartState {
     items: CartItem[];
@@ -60,10 +60,8 @@ const cartSlice = createSlice({
             .addCase(getTotalCart.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getTotalCart.rejected, (state, action) => {
-                state.error = action.error.message || 'Error fetching total cart';
-                console.log("🔹 [CartSlice] Error fetching total cart:", state.error);
-                state.loading = false;
+            .addCase(addItemToCart.fulfilled, (state) => {
+                state.totalOfCart += 1
             });
     },
 });

@@ -17,7 +17,7 @@ import Profile from '../pages/Profile/Profile.tsx';
 import Cart from '../pages/Cart/Cart.tsx';
 import NotFound from '../pages/Error/NotFound.tsx';
 import ServerError from '../pages/Error/ServerError.tsx';
-import Supplier from '../pages/Supplier/Supplier.tsx';
+import Supplier from '../pages/Supplier/Suppliers.tsx';
 import Analytics from '../pages/Dashboard/Analytics.tsx';
 import SupplierDetail from '../pages/Supplier/SupplierDetail.tsx';
 import History from '../pages/History/History.tsx';

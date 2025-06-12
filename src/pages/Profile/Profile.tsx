@@ -6,7 +6,6 @@ import {
   Phone,
   MapPin,
   Lock,
-  Calendar,
   CreditCard,
   Bell,
   Settings,
@@ -18,7 +17,7 @@ import { toast } from "react-toastify";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AppDispatch } from "../../features/store";
-import { User as UserType } from "../../types/User.type";
+import { UserRole, User as UserType } from "../../types/User.type";
 import axios from "axios";
 import defaultAvatar from "../../assets/avatar.svg";
 import { profile } from "../../features/Auth/authThunks";
@@ -80,7 +79,7 @@ const Profile = () => {
     address: "",
     dateOfBirth: "",
     avatar: "",
-    role: 3, // Role.Customer
+    role: UserRole.Customer
   });
 
   useEffect(() => {
@@ -204,7 +203,7 @@ const Profile = () => {
               <div className="space-y-2">
                 <label className="flex items-center text-gray-600">
                   <User className="w-5 h-5 mr-2 text-purple-600" />
-                  Họ và tên
+                  Tên đăng nhập
                 </label>
                 <input
                   type="text"
@@ -246,20 +245,6 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-600">
-                  <Calendar className="w-5 h-5 mr-2 text-purple-600" />
-                  Ngày sinh
-                </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 disabled:opacity-50"
-                />
-              </div>
 
               <div className="space-y-2 md:col-span-2">
                 <label className="flex items-center text-gray-600">

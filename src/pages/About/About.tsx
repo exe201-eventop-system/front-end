@@ -149,11 +149,8 @@ const StatCard = ({ icon: Icon, value, label, index }: StatCardProps) => (
     whileHover={{ scale: 1.05, y: -5 }}
     className="bg-white/90 backdrop-blur-xl rounded-2xl p-8 text-center border border-purple-200 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300"
   >
-    <div className="relative">
-      <Icon className="w-12 h-12 mx-auto mb-4 text-purple-500" />
-      <div className="absolute -top-2 -right-2 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-        <FiArrowRight className="text-purple-500" />
-      </div>
+    <div className="flex justify-center mb-4">
+      <Icon className="w-12 h-12 text-purple-600" />
     </div>
     <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{value}</div>
     <div className="text-gray-700 font-medium">{label}</div>
@@ -203,7 +200,7 @@ const TeamMemberCard = ({ member, index }: TeamMemberCardProps) => (
 
 const MilestoneCard = ({ milestone, index }: { milestone: Milestone; index: number }) => (
   <motion.div
-  
+
     initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
     whileInView={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -215,7 +212,7 @@ const MilestoneCard = ({ milestone, index }: { milestone: Milestone; index: numb
       <h3 className="text-xl font-bold mb-2 text-gray-900">{milestone.title}</h3>
       <p className="text-gray-600">{milestone.description}</p>
     </div>
-   
+
   </motion.div>
 );
 
@@ -233,7 +230,7 @@ const About = () => {
     <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-purple-100">
       {/* Hero Section with Parallax */}
       <div className="relative h-screen flex items-center justify-center overflow-hidden">
-        
+
         <motion.div
           animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
           style={{ opacity, scale }}

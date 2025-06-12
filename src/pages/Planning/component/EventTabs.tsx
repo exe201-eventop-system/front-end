@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../features/store";
-import { getPlanning, getAPlanning, createPlanningStep2, deletePlanning } from "../../../features/Planning/planningThunks";
+import {  getAPlanning, createPlanningStep2, deletePlanning } from "../../../features/Planning/planningThunks";
 import { PlaningResponse, PlanningType, PlaningStep2Request } from "../../../types/Planning.type";
 import { ChevronDown, ChevronUp, Plus, Minus, Calendar, MapPin, Users, DollarSign, Tag, Palette, ShoppingCart } from "lucide-react";
 import { toast } from "react-toastify";
@@ -18,7 +18,6 @@ interface Service {
   avatar: string;
 }
 
-type TabKey = "Planning" | "Ongoing" | "Completed";
 
 // Mock Data
 const mockServices: Service[] = [
@@ -64,11 +63,6 @@ const mockServices: Service[] = [
   }
 ];
 
-const tabs = [
-  { key: "Planning", label: "Đang Lên Kế Hoạch" },
-  { key: "Ongoing", label: "Đang Diễn Ra" },
-  { key: "Completed", label: "Đã Hoàn Thành" },
-] as const;
 
 // Utility Functions
 const formatDate = (dateString: string | null | undefined) => {
@@ -113,18 +107,6 @@ const planningTypeLabels: Record<PlanningType, string> = {
   [PlanningType.TEAM_BUILDING]: "Team Building",
   [PlanningType.OTHER]: "Khác"
 };
-
-const TabButton = ({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) => (
-  <button
-    onClick={onClick}
-    className={`px-6 py-3 rounded-xl transition-all duration-200 ${active
-      ? "bg-purple-600 text-white shadow-lg shadow-purple-200"
-      : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-      }`}
-  >
-    {label}
-  </button>
-);
 
 const EventCard = ({ event, isExpanded, onToggle, children }: {
   event: PlaningResponse;
@@ -530,7 +512,6 @@ interface ServiceFilters {
 
 // Main Component
 const EventTabs = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>("Planning");
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [expandedEventDetails, setExpandedEventDetails] = useState<PlaningResponse | null>(null);
   const [selectedServices, setSelectedServices] = useState<{ [key: string]: Service[] }>({});
@@ -578,21 +559,6 @@ const EventTabs = () => {
 
     return matchesCategory && matchesSearch && matchesPrice;
   });
-
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await dispatch(
-        getPlanning({ page: currentPage, size: pageSize, status: activeTab })
-      ).unwrap();
-      console.log("🔹 [EventTabs] Fetched data:", response);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    }
-  }, [dispatch, currentPage, pageSize, activeTab]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const fetchEventDetails = useCallback(async (eventId: string) => {
     try {
@@ -658,28 +624,18 @@ const EventTabs = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    const deleteEvent = async () => {
-      if (!eventToDelete) return;
-
+  const handleConfirmDelete = async () => {
+    if (eventToDelete) {
       try {
-        console.log("Event ID to delete:", eventToDelete.id);
-        const response = await dispatch(deletePlanning({ planningId: eventToDelete.id })).unwrap();
-
-        if (response) {
-          toast.success('Xóa sự kiện thành công!');
-          // Refresh the planning list
-          dispatch(getPlanning({ page: currentPage, size: pageSize, status: activeTab }));
-          setIsDeleteModalOpen(false);
-          setEventToDelete(null);
-        }
+        await dispatch(deletePlanning({ planningId: eventToDelete.id })).unwrap();
+        toast.success("Xóa sự kiện thành công!");
+        setIsDeleteModalOpen(false);
+        setEventToDelete(null);
       } catch (error) {
-        console.error('Failed to delete event:', error);
-        toast.error('Xóa sự kiện thất bại!');
+        console.error("Failed to delete planning:", error);
+        toast.error("Xóa sự kiện thất bại!");
       }
-    };
-
-    deleteEvent();
+    }
   };
 
   const handleBookNow = (eventId: string) => {
@@ -687,26 +643,11 @@ const EventTabs = () => {
       toast.warning('Vui lòng chọn ít nhất một dịch vụ!');
       return;
     }
-
-    // TODO: Add selected services to cart
-    // For now, just navigate to cart
     navigate('/cart');
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Tabs */}
-      <div className="flex gap-4 mb-8">
-        {tabs.map((tab) => (
-          <TabButton
-            key={tab.key}
-            active={activeTab === tab.key}
-            label={tab.label}
-            onClick={() => setActiveTab(tab.key as TabKey)}
-          />
-        ))}
-      </div>
-
+    <div className="max-w-7xl mx-auto">
       {/* Loading State */}
       {loading ? (
         <div className="flex justify-center items-center h-64">

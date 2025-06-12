@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import logo from "../../../assets/logo.png";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  register,
   fetchProvinces,
   fetchDistricts,
   fetchWards,
+  signUp,
 } from "../../../features/Auth/authThunks";
 import { RegisterRequest, Address, RegisterRequestInput } from "../../../types/Register.type";
 import type { AppDispatch, RootState } from "../../../features/store";
@@ -133,7 +133,7 @@ const RegisterForm = ({ onSwitch }: { onSwitch: () => void }) => {
     };
 
     try {
-      const result = await dispatch(register(payload));
+      const result = await dispatch(signUp(payload));
       setSentEmail(result.payload as string);
       setEmailSent(true);
     } catch (error) {
@@ -147,11 +147,11 @@ const RegisterForm = ({ onSwitch }: { onSwitch: () => void }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="text-white max-w-md mx-auto">
+      <div className="text-white max-w-md mx-auto border-none">
         <Link to="/" className="flex justify-center">
           <div className="text-xl font-bold flex items-center space-x-2">
             <img src={logo} alt="logo" className="h-6" />
-            <span>Event Top</span>
+            <span>EvenTop</span>
           </div>
         </Link>
 
@@ -223,61 +223,89 @@ const RegisterForm = ({ onSwitch }: { onSwitch: () => void }) => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <select
-            name="province"
-            value={address.province}
-            onChange={handleProvinceChange}
-            className="w-full text-black bg-white p-2 rounded-lg border border-white/20"
-            required
-          >
-            <option value="">Tỉnh/Thành</option>
-            {provinces.map((p) => (
-              <option key={p.code} value={p.code}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+        <div className="mb-6">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative">
+                <select
+                  name="province"
+                  value={address.province}
+                  onChange={handleProvinceChange}
+                  className="w-full text-black bg-white p-3 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 appearance-none"
+                  required
+                >
+                  <option value="">Chọn Tỉnh/Thành</option>
+                  {provinces.map((p) => (
+                    <option key={p.code} value={p.code}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-          <select
-            name="district"
-            value={address.district}
-            onChange={handleDistrictChange}
-            className="w-full text-black bg-white p-2 rounded-lg border border-white/20"
-            disabled={!districts.length}
-            required
-          >
-            <option value="">Quận/Huyện</option>
-            {districts.map((d) => (
-              <option key={d.code} value={d.code}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+              <div className="relative">
+                <select
+                  name="district"
+                  value={address.district}
+                  onChange={handleDistrictChange}
+                  className="w-full text-black bg-white p-3 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  disabled={!districts.length}
+                  required
+                >
+                  <option value="">Chọn Quận/Huyện</option>
+                  {districts.map((d) => (
+                    <option key={d.code} value={d.code}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-          <select
-            name="ward"
-            value={address.ward}
-            onChange={handleWardChange}
-            className="w-full text-black bg-white p-2 rounded-lg border border-white/20"
-            disabled={!wards.length}
-            required
-          >
-            <option value="">Xã/Phường</option>
-            {wards.map((w) => (
-              <option key={w.code} value={w.code}>
-                {w.name}
-              </option>
-            ))}
-          </select>
+              <div className="relative">
+                <select
+                  name="ward"
+                  value={address.ward}
+                  onChange={handleWardChange}
+                  className="w-full text-black bg-white p-3 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  disabled={!wards.length}
+                  required
+                >
+                  <option value="">Chọn Xã/Phường</option>
+                  {wards.map((w) => (
+                    <option key={w.code} value={w.code}>
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-          <input
-            name="hamlet"
-            placeholder="Ấp"
-            value={address.hamlet}
-            onChange={(e) => setAddress(prev => ({ ...prev, hamlet: e.target.value }))}
-            className="w-full text-black bg-white p-2 rounded-lg border border-white/20"
-          />
+              <div className="relative">
+                <input
+                  name="hamlet"
+                  placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường, ấp...)"
+                  value={address.hamlet}
+                  onChange={(e) => setAddress(prev => ({ ...prev, hamlet: e.target.value }))}
+                  className="w-full text-black bg-white p-3 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 resize-none "
+                  required
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         <button
