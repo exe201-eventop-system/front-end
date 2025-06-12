@@ -39,7 +39,7 @@ const PlaningSearch = ({ onSearch }: PlaningSearchProps) => {
             Chào mừng đến với
           </h2>
           <h1 className="text-5xl md:text-7xl font-extrabold text-white drop-shadow-md">
-            EVEN TOP
+            EVENTOP
           </h1>
           <p className="text-white text-lg md:text-xl font-semibold tracking-wide">
             Plan Smarter, Party Harder
