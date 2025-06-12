@@ -53,7 +53,7 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <img src={logo} alt="logo" className="h-8 w-auto" />
-              <span className="text-xl font-bold text-white">EventTop</span>
+              <span className="text-xl font-bold text-white">EvenTop</span>
             </Link>
           </div>
 
