@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSend, FiX, FiMinimize2, FiMaximize2 } from 'react-icons/fi';
 import { FaRobot } from 'react-icons/fa';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../features/store';
+import { chatWithAI } from '../../../features/Cart/cartThunk';
 
 interface Message {
     id: number;
@@ -25,6 +27,7 @@ const AIChatbox = () => {
     const [inputMessage, setInputMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const dispatch = useDispatch<AppDispatch>();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,41 +52,23 @@ const AIChatbox = () => {
         setIsTyping(true);
 
         try {
-            // Call HuggingFace Inference API
-            const response = await axios.post(
-                'https://api-inference.huggingface.co/models/facebook/blenderbot-1B-distill',
-                {
-                    inputs: inputMessage,
-                    options: {
-                        wait_for_model: true
-                    }
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            // Add AI response
+            const res = await dispatch(chatWithAI(inputMessage)).unwrap();
+            // Format AI response (simple markdown: \n -> <br/>, * -> bullet, ** -> bold)
+            const formatted = formatAIResponse(res.data || '');
             const aiMessage: Message = {
                 id: messages.length + 2,
-                text: response.data.generated_text || "Xin lỗi, tôi không thể xử lý yêu cầu của bạn lúc này.",
+                text: formatted,
                 sender: 'ai',
                 timestamp: new Date()
             };
             setMessages(prev => [...prev, aiMessage]);
-        } catch (error) {
-            console.error('Error getting AI response:', error);
-            // Add error message
-            const errorMessage: Message = {
+        } catch (err) {
+            setMessages(prev => [...prev, {
                 id: messages.length + 2,
-                text: "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.",
+                text: 'Đã có lỗi khi kết nối AI. Vui lòng thử lại.',
                 sender: 'ai',
                 timestamp: new Date()
-            };
-            setMessages(prev => [...prev, errorMessage]);
+            }]);
         } finally {
             setIsTyping(false);
         }
@@ -95,6 +80,20 @@ const AIChatbox = () => {
             handleSendMessage();
         }
     };
+
+    // Format AI response: chuyển \n thành <br/>, * thành bullet, ** thành bold
+    function formatAIResponse(text: string): string {
+        // Đơn giản: bold, xuống dòng, bullet
+        let html = text
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\n/g, '<br/>')
+            .replace(/\* (.*?)(<br\/>|$)/g, '<li>$1</li>');
+        // Nếu có <li>, bọc trong <ul>
+        if (html.includes('<li>')) {
+            html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+        }
+        return html;
+    }
 
     return (
         <>
@@ -119,7 +118,7 @@ const AIChatbox = () => {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className={`fixed bottom-6 right-6 w-96 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden z-50 ${isMinimized ? 'h-16' : 'h-[500px]'}`}
+                        className={`fixed bottom-6 right-6 w-96 bg-white rounded-2xl shadow-2xl overflow-hidden z-50 border border-gray-200 ${isMinimized ? 'h-16' : 'h-[500px]'}`}
                     >
                         {/* Chat Header */}
                         <div className="bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 p-4 flex items-center justify-between">
@@ -146,7 +145,7 @@ const AIChatbox = () => {
                         {!isMinimized && (
                             <>
                                 {/* Chat Messages */}
-                                <div className="h-[calc(500px-8rem)] overflow-y-auto p-4 space-y-4">
+                                <div className="h-[calc(500px-8rem)] overflow-y-auto p-4 space-y-4 bg-white">
                                     {messages.map((message) => (
                                         <motion.div
                                             key={message.id}
@@ -155,12 +154,16 @@ const AIChatbox = () => {
                                             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                         >
                                             <div
-                                                className={`max-w-[80%] rounded-2xl p-3 ${message.sender === 'user'
-                                                    ? 'bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white'
-                                                    : 'bg-white/10 text-white'
+                                                className={`max-w-[80%] rounded-2xl p-3 border ${message.sender === 'user'
+                                                    ? 'bg-gray-100 text-black'
+                                                    : 'bg-white text-black border-gray-200'
                                                     }`}
                                             >
-                                                <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                                                {message.sender === 'ai' ? (
+                                                    <span className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: message.text }} />
+                                                ) : (
+                                                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                                                )}
                                                 <span className="text-xs opacity-70 mt-1 block">
                                                     {message.timestamp.toLocaleTimeString()}
                                                 </span>
@@ -169,11 +172,11 @@ const AIChatbox = () => {
                                     ))}
                                     {isTyping && (
                                         <div className="flex justify-start">
-                                            <div className="bg-white/10 text-white rounded-2xl p-3">
+                                            <div className="bg-gray-100 text-black rounded-2xl p-3">
                                                 <div className="flex space-x-2">
-                                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce" />
-                                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce delay-100" />
-                                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce delay-200" />
+                                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
+                                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
                                                 </div>
                                             </div>
                                         </div>
@@ -182,7 +185,7 @@ const AIChatbox = () => {
                                 </div>
 
                                 {/* Chat Input */}
-                                <div className="p-4 border-t border-white/10">
+                                <div className="p-4 border-t border-gray-200 bg-white">
                                     <div className="flex gap-2">
                                         <input
                                             type="text"
@@ -190,7 +193,7 @@ const AIChatbox = () => {
                                             onChange={(e) => setInputMessage(e.target.value)}
                                             onKeyPress={handleKeyPress}
                                             placeholder="Nhập tin nhắn..."
-                                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         />
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}

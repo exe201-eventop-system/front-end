@@ -3,12 +3,29 @@ import authReducer from './Auth/authSlice';
 import blogReducer from './Blogs/blogSlice';
 import serviceReducer from './Services/serviceSlice'
 import planningReducer from './Planning/planningSlice'
+import cartReducer from './Cart/cartSlice'
+import scheduleReducer from './Schedule/scheduleSlice'
+import bookingReducer from './Booking/bookingSlice';
+import transactionReducer from './Cart/transactionSlice';
+import userReducer from './User/userSlice';
+import supplierReducer from './Supplier/supplierSlice';
+import feedbackReducer from './Cart/feedbackSlice';
+import dashboardReducer from './Dashboard/dashboardSlice';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     blog: blogReducer,
     service: serviceReducer,
-    planning: planningReducer
+    planning: planningReducer,
+    cart: cartReducer,
+    schedule: scheduleReducer,
+    booking: bookingReducer,
+    transaction: transactionReducer,
+    user: userReducer,
+    supplier: supplierReducer,
+    feedback: feedbackReducer,
+    dashboard: dashboardReducer,
   },
 });
 

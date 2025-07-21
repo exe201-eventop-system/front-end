@@ -5,44 +5,43 @@ import {
   fetchDistricts,
   fetchProvinces,
   fetchWards,
-  profile,
+  signIn,
+  getProfile,
+  updateProfile,
 } from "./authThunks";
-import {
-  saveToLocalStorage,
-  removeFromLocalStorage,
-  getFromLocalStorage,
-} from "../../utils/localStorageHelper";
-import { Role, User } from "../../types/User.type";
+import { handleTokenStorage } from "../../utils/jwt/JwtHelper";
+import { UserProfile } from "../../types/Auth/User.type";
 
 interface AuthState {
   isAuthenticated: boolean;
-  access_token: string | null;
-  refresh_token: string | null;
+  isLoading?: boolean;
   error: string | null;
+  user: UserProfile;
+  errorMessage: string | null;
   authType: "login" | "register";
   provinces: { code: number; name: string }[];
   districts: { code: number; name: string }[];
   wards: { code: number; name: string }[];
-  user: User;
+  status: 'idle' | 'pending' | 'succeeded' | 'failed';
 }
 
 const initialState: AuthState = {
-  isAuthenticated: getFromLocalStorage("access_token") !== null,
-  access_token: getFromLocalStorage("access_token"),
-  refresh_token: getFromLocalStorage("refresh_token"),
+  isAuthenticated: localStorage.getItem("access_token") !== null,
+  user: {
+    email: '',
+    user_name: '',
+    address: '',
+    avatar: '',
+    phone_number: '',
+  },
   authType: "login",
+  isLoading: false,
   error: null,
+  errorMessage: null,
   provinces: [],
   districts: [],
   wards: [],
-  user: {
-    id: "",
-    userName: "",
-    email: "",
-    role: Role.Customer,
-    address: "",
-    avatar: "",
-  },
+  status: 'idle',
 };
 
 const authSlice = createSlice({
@@ -51,11 +50,10 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.isAuthenticated = false;
-      state.access_token = null;
-      state.refresh_token = null;
       state.error = null;
-      removeFromLocalStorage("access_token");
-      removeFromLocalStorage("refresh_token");
+      state.errorMessage = null;
+      localStorage.clear();
+      state.status = 'idle';
     },
     setAuthType: (state, action) => {
       state.authType = action.payload;
@@ -69,48 +67,80 @@ const authSlice = createSlice({
       } else {
         state.authType = state.authType === "login" ? "register" : "login";
       }
+      state.status = 'idle';
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(signIn.pending, (state) => {
+        state.error = null;
+        state.errorMessage = null;
+        state.status = 'pending';
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.status = "succeeded";
+        state.user = action.payload.data ?? {
+          email: '',
+          user_name: '',
+          address: '',
+          avatar: '',
+          phone_number: '',
+        };
+
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload.data ?? {
+          email: '',
+          user_name: '',
+          address: '',
+          avatar: '',
+          phone_number: '',
+        };
+      })
+      .addCase(signIn.rejected, (state, action) => {
+        state.isAuthenticated = false;
+        state.error = action.payload ?? "Unknown error";
+        state.errorMessage = action.payload as string || "Unknown error";
+        state.status = 'failed';
+      })
+      .addCase(signIn.fulfilled, (state) => {
+        state.isAuthenticated = true;
+        state.status = 'failed';
+      })
       .addCase(signUp.pending, (state) => {
         state.error = null;
+        state.errorMessage = null;
+        state.status = 'pending';
       })
-      .addCase(signUp.fulfilled, (state, action) => {
-        state.isAuthenticated = true;
-        saveToLocalStorage(
-          "access_token",
-          action.payload.data?.access_token ?? ""
-        );
-        saveToLocalStorage(
-          "refresh_token",
-          action.payload.data?.refresh_token ?? ""
-        );
+      .addCase(signUp.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.error = null; // Clear any previous errors
       })
       .addCase(signUp.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.access_token = null;
-        state.refresh_token = null;
         state.error = action.payload ?? "Unknown error";
+        state.errorMessage = action.payload as string || "Unknown error";
+        state.status = 'failed';
       })
 
       // Xử lý confirmEmail
+      .addCase(confirmEmail.pending, (state) => {
+        state.status = 'pending';
+        state.error = null;
+        state.errorMessage = null;
+      })
       .addCase(confirmEmail.fulfilled, (state, action) => {
         state.isAuthenticated = true;
-        saveToLocalStorage(
-          "access_token",
-          action.payload.data?.access_token ?? ""
-        );
-        saveToLocalStorage(
-          "refresh_token",
-          action.payload.data?.refresh_token ?? ""
-        );
+        const token = action.payload.data?.access_token ?? "";
+        handleTokenStorage(token);
       })
       .addCase(confirmEmail.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.access_token = null;
-        state.refresh_token = null;
         state.error = action.payload ?? "Xác nhận email thất bại";
+        state.errorMessage = action.payload ?? "Xác nhận email thất bại";
+        state.status = 'failed';
       })
       .addCase(fetchProvinces.fulfilled, (state, action) => {
         state.provinces = action.payload;
@@ -121,16 +151,7 @@ const authSlice = createSlice({
       .addCase(fetchWards.fulfilled, (state, action) => {
         state.wards = action.payload;
       })
-      .addCase(profile.fulfilled, (state, action) => {
-        state.user = action.payload.data ?? {
-          id: "",
-          userName: "",
-          email: "",
-          role: Role.Customer,
-          address: "",
-          avatar: "",
-        };
-      });
+
   },
 });
 

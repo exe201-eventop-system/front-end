@@ -1,427 +1,398 @@
-import { useState, useCallback } from "react";
-import Tabs from "../../../components/Tabs";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../features/store";
-import { getPlanning, getAPlanning } from "../../../features/Planning/planningThunks";
-import { PlaningResponse } from "../../../types/Planning.type";
-import { PaginatedList } from "../../../components/PaginatedList";
-import { PaginationResult } from "../../../types/PaginationResult.type";
-import { ChevronDown, ChevronUp, Plus, Minus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../features/store";
+import { getPlanning, createPlanningStep2, deletePlanning, addServiceToPlanning, deleteServiceFromPlanning } from "../../../features/Planning/planningThunks";
+import { PlaningResponse, PlanningType } from "../../../types/Planning/Planning.type";
 
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-}
+import { toast } from "react-toastify";
+import BaseModal from "../../../components/ui/BaseModal";
+import Loading from "../../../components/common/Loading";
+import ErrorMessage from "../../../components/common/ErrorMessage";
+import { Service } from '../../../types/Services/Services.type';
+import { getServices } from '../../../features/Services/serviceThunks';
+import { getSheduleSupplier } from '../../../features/Schedule/scheduleThunk';
+import EventCard from './EventCard';
+import EventDetails from './EventDetails';
+import SelectedServices from './SelectedServices';
+import AvailableServices from './AvailableServices';
+import BookingModal from './BookingModal';
+import { deleteCartItem } from '../../../features/Cart/cartThunk';
 
-// Dữ liệu mẫu cho các dịch vụ
-const mockServices: Service[] = [
-  {
-    id: "1",
-    name: "Trang trí sân khấu",
-    description: "Trang trí sân khấu theo chủ đề",
-    price: 5000000,
-    category: "Trang trí"
-  },
-  {
-    id: "2",
-    name: "Âm thanh ánh sáng",
-    description: "Hệ thống âm thanh và ánh sáng chuyên nghiệp",
-    price: 3000000,
-    category: "Âm thanh"
-  },
-  {
-    id: "3",
-    name: "MC chuyên nghiệp",
-    description: "MC dẫn chương trình chuyên nghiệp",
-    price: 2000000,
-    category: "Nhân sự"
-  },
-  {
-    id: "4",
-    name: "Catering",
-    description: "Dịch vụ ăn uống cho 100 người",
-    price: 10000000,
-    category: "Ẩm thực"
-  },
-  {
-    id: "5",
-    name: "Chụp ảnh",
-    description: "Chụp ảnh và quay phim sự kiện",
-    price: 4000000,
-    category: "Media"
-  }
-];
-
-const tabs = [
-  { key: "Planning", label: "Đang Lên Kế Hoạch" },
-  { key: "Ongoing", label: "Đang Diễn Ra" },
-  { key: "Completed", label: "Đã Hoàn Thành" },
-] as const;
-
-type TabKey = typeof tabs[number]["key"];
-
-const formatDate = (dateString: string | null | undefined) => {
-  if (!dateString) return "Chưa có";
-  try {
-    return new Date(dateString).toLocaleDateString('vi-VN');
-  } catch {
-    return "Định dạng không hợp lệ";
-  }
-};
 
 const formatCurrency = (amount: number | null | undefined) => {
   if (amount === null || amount === undefined) return "Chưa có";
   return amount.toLocaleString('vi-VN') + " VNĐ";
 };
 
+// Đặt hàm getMinPrice ở đầu file (sau import)
+const getMinPrice = (service: Service) => {
+  if (!service.packages || service.packages.length === 0) return undefined;
+  return Math.min(...service.packages.map(pkg => pkg.price));
+};
+
+
+// Main Component
 const EventTabs = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>("Planning");
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [expandedEventDetails, setExpandedEventDetails] = useState<PlaningResponse | null>(null);
-  const [selectedServices, setSelectedServices] = useState<{ [key: string]: Service[] }>({});
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<PlaningResponse | null>(null);
   const [editFields, setEditFields] = useState({
+    name: "",
+    description: "",
     location: "",
     aboutNumberPeople: "",
     budget: "",
     typeOfEvent: "",
     mainColor: "",
-    status: "Planning",
-    description: ""
+    dateOfEvent: "",
+    status: "Planning"
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const [addingServiceId, setAddingServiceId] = useState<string | null>(null);
+  const [removingServiceId, setRemovingServiceId] = useState<string | null>(null);
+  const [planningList, setPlanningList] = useState<PlaningResponse[]>([]);
+  // 1. Khôi phục state bookingData, showBookingModal
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingData, setBookingData] = useState<{ serviceId: string, name: string, packageType: "hour" | "date" | "recurring", minSlotCount: number, date?: string, start?: string, end?: string }[]>([]);
+
   const dispatch = useDispatch<AppDispatch>();
+  const planningData = useSelector((state: RootState) => state.planning.plannings);
+  const loading = useSelector((state: RootState) => state.planning.loading);
 
-  const fetchPlanningData = useCallback(
-    async ({
-      page,
-      size,
-    }: {
-      page: number;
-      size: number;
-    }): Promise<PaginationResult<PlaningResponse>> => {
-      console.log("🔹 [EventTabs] Fetching planning data with:", { page, size, activeTab });
-      const response = await dispatch(
-        getPlanning({ page, size, status: activeTab })
-      ).unwrap();
-      console.log("🔹 [EventTabs] Received planning data:", response);
+  // Lấy service thực tế từ store
+  const { services: serviceData, loading: serviceLoading, error: serviceError } = useSelector((state: RootState) => state.service);
+  let services: Service[] = [];
+  if (Array.isArray(serviceData) && serviceData.length && 'id' in serviceData[0]) {
+    services = serviceData as Service[];
+  } else if (serviceData && Array.isArray((serviceData as any).content)) {
+    services = (serviceData as any).content as Service[];
+  }
 
-      return (
-        response.data ?? {
-          content: [],
-          itemAmount: 0,
-          pageSize: size,
-          pageCount: 0,
-          currentPage: page,
-        }
-      );
-    },
-    [dispatch, activeTab]
-  );
+  // Đặt useSelector lấy cartContent/carrServiceIds lên đầu, trước mọi return
+  const cartContent = useSelector((state: RootState) => state.cart.carts.content || []);
+  const cartServiceIds = cartContent.map(item => item.serviceId);
 
-  const fetchEventDetails = useCallback(async (eventId: string) => {
-    try {
-      const response = await dispatch(getAPlanning({ planningId: eventId })).unwrap();
-      if (response.data) {
-        setExpandedEventDetails(response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch event details:", error);
-    }
-  }, [dispatch]);
-
-  const toggleEventDetails = async (eventId: string) => {
+  const toggleEventDetails = (eventId: string) => {
     if (expandedEventId === eventId) {
       setExpandedEventId(null);
       setExpandedEventDetails(null);
     } else {
       setExpandedEventId(eventId);
-      await fetchEventDetails(eventId);
+      // Lấy chi tiết từ danh sách đã có
+      const planning = planningData.find(p => p.id === eventId);
+      setExpandedEventDetails(planning || null);
+    }
+  };
+  const handleEdit = (event: PlaningResponse) => {
+    setEditFields({
+      name: event.name || "",
+      description: event.description || "",
+      location: event.location || "",
+      aboutNumberPeople: event.aboutNumberPeople || "",
+      budget: event.budget?.toString() || "",
+      typeOfEvent: event.typeOfEvent || "",
+      mainColor: event.mainColor || "",
+      dateOfEvent: event.dateOfEvent || "",
+      status: event.status || "Planning"
+    });
+    setIsEditing(true);
+  };
+  const handleRemoveService = async (sessionService: { id: string, serviceId?: string }) => {
+    if (!expandedEventId || !expandedEventDetails) return;
+    setRemovingServiceId(sessionService.id);
+    try {
+      await dispatch(deleteServiceFromPlanning({ sessionId: sessionService.id })).unwrap();
+      // Xóa luôn khỏi cart
+      await dispatch(deleteCartItem({ id_cart_item: sessionService.id }));
+      // FE cập nhật expandedEventDetails.sesstionServices
+      setExpandedEventDetails(prev => prev ? {
+        ...prev,
+        sesstionServices: prev.sesstionServices.filter((ss: any) => ss.id !== sessionService.id)
+      } : prev);
+    } catch (err) {
+      console.error("Lỗi khi xóa dịch vụ:", err);
+    } finally {
+      setRemovingServiceId(null);
     }
   };
 
-  const toggleService = (eventId: string, service: Service) => {
-    setSelectedServices(prev => {
-      const currentServices = prev[eventId] || [];
-      const isSelected = currentServices.some(s => s.id === service.id);
+  const handleFieldChange = (field: string, value: string) => {
+    setEditFields(prev => ({ ...prev, [field]: value }));
+  };
 
-      if (isSelected) {
-        return {
-          ...prev,
-          [eventId]: currentServices.filter(s => s.id !== service.id)
-        };
-      } else {
-        return {
-          ...prev,
-          [eventId]: [...currentServices, service]
-        };
+  const handleDeleteClick = (event: PlaningResponse) => {
+    setEventToDelete(event);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (eventToDelete) {
+      // Xóa ngay trên FE
+      setExpandedEventDetails(null);
+      setExpandedEventId(null);
+      setPlanningList(prev => prev.filter(p => p.id !== eventToDelete.id));
+      try {
+        await dispatch(deletePlanning({ planningId: eventToDelete.id })).unwrap();
+        toast.success("Xóa sự kiện thành công!");
+        setIsDeleteModalOpen(false);
+        setEventToDelete(null);
+      } catch (error) {
+        console.error("Failed to delete planning:", error);
+        toast.error("Xóa sự kiện thất bại!");
+      }
+    }
+  };
+
+  // 2. Khôi phục handleBookNow
+  const handleBookNow = (eventId: string) => {
+    console.log("dfdf", eventId);
+    setBookingData(selectedServiceObjs.map(({ service }) => {
+      const rentalOptions = service.packages || [];
+      const firstOption = rentalOptions[0] || {};
+      let packageType: "hour" | "date" | "recurring" = "hour";
+      if (firstOption.package_name === "Theo ngày") packageType = "date";
+      else if (firstOption.package_name === "Theo giờ") packageType = "hour";
+      else if (firstOption.package_name === "Theo tuần") packageType = "recurring";
+      const minSlotCount = ('minimum_hours' in firstOption && typeof firstOption.minimum_hours === 'number') ? firstOption.minimum_hours * 2 : 3;
+      return {
+        serviceId: service.id,
+        name: service.name,
+        packageType,
+        minSlotCount,
+        date: '',
+        start: '',
+        end: ''
+      };
+    }));
+    selectedServiceObjs.forEach(({ service }) => {
+      if (service.supplier?.id) {
+        dispatch(getSheduleSupplier({ id_supplier: service.supplier.id }));
       }
     });
+    setShowBookingModal(true);
   };
 
-  const isServiceSelected = (eventId: string, serviceId: string) => {
-    return (selectedServices[eventId] || []).some(s => s.id === serviceId);
+  const handleSave = async () => {
+    if (!expandedEventDetails) return;
+    try {
+      const updated = await dispatch(createPlanningStep2({
+        id: expandedEventDetails.id,
+        name: editFields.name,
+        description: editFields.description,
+        location: editFields.location,
+        date_of_event: editFields.dateOfEvent,
+        budget: Number(editFields.budget),
+        about_number_people: editFields.aboutNumberPeople,
+        main_color: editFields.mainColor,
+        type_of_event: editFields.typeOfEvent as PlanningType,
+      })).unwrap();
+      toast.success("Cập nhật sự kiện thành công!");
+      setIsEditing(false);
+      dispatch(getPlanning({}));
+      if (updated && typeof updated === 'object' && 'data' in updated && updated.data) {
+        setExpandedEventDetails(updated.data);
+      } else if (
+        updated &&
+        typeof updated === 'object' &&
+        'id' in updated &&
+        'name' in updated &&
+        'customerId' in updated &&
+        'description' in updated &&
+        'status' in updated &&
+        'location' in updated &&
+        'dateOfEvent' in updated &&
+        'budget' in updated &&
+        'aboutNumberPeople' in updated &&
+        'mainColor' in updated &&
+        'typeOfEvent' in updated &&
+        'createAt' in updated &&
+        'updateDate' in updated &&
+        'sesstionServices' in updated
+      ) {
+        setExpandedEventDetails(updated as PlaningResponse);
+      } else {
+        setExpandedEventDetails(null);
+      }
+    } catch (err) {
+      toast.error("Cập nhật sự kiện thất bại!");
+    }
   };
 
-  const getTotalPrice = (eventId: string) => {
-    return (selectedServices[eventId] || []).reduce((total, service) => total + service.price, 0);
-  };
 
-  const handleSave = () => {
-    // Implement the logic to save the edited event details
-    console.log("Saving event details:", editFields);
-    setIsEditing(false);
-  };
+  useEffect(() => {
+    dispatch(getServices({}));
+  }, [dispatch]);
 
-  const handleCancel = () => {
-    // Implement the logic to cancel the editing
-    setIsEditing(false);
-  };
+  useEffect(() => {
+    setPlanningList(planningData);
+  }, [planningData]);
+
+  if (serviceLoading) return <Loading />;
+  if (serviceError) return <ErrorMessage />;
+
+  const selectedSessionServices = expandedEventDetails?.sesstionServices || [];
+  const selectedServiceObjs: { service: Service, sessionServiceId: string }[] = selectedSessionServices.map((ss: any) => {
+    const service = services.find(s => s.id === ss.serviceId);
+    return service ? { service, sessionServiceId: ss.id } : null;
+  }).filter(Boolean) as { service: Service, sessionServiceId: string }[];
+
+  const selectedServiceIds = expandedEventDetails?.sesstionServices?.map((ss: any) => ss.serviceId) || [];
 
   return (
-    <div className="mt-8">
-      <div className="flex gap-4 mb-4">
-        {tabs.map((tab) => (
-          <Tabs
-            key={tab.key}
-            isActive={activeTab === tab.key}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </Tabs>
-        ))}
-      </div>
-
-      <PaginatedList<PlaningResponse>
-        fetchData={fetchPlanningData}
-        renderItem={(event) => (
-          <li
-            key={event.id}
-            className="p-4 border rounded-lg bg-white shadow hover:shadow-md transition"
-            style={{ listStyle: 'none' }}
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800">{event.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{formatDate(event.dateOfEvent)}</p>
-              </div>
-              <button
-                onClick={() => toggleEventDetails(event.id)}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
+    <div className="max-w-7xl mx-auto">
+      {/* Loading State */}
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          {/* Event List */}
+          <div className="space-y-6">
+            {planningList.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                isExpanded={expandedEventId === event.id}
+                onToggle={() => toggleEventDetails(event.id)}
               >
-                {expandedEventId === event.id ? (
-                  <ChevronUp className="h-5 w-5 text-gray-600" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-600" />
+                {expandedEventId === event.id && expandedEventDetails && (
+                  <>
+                    <EventDetails
+                      event={expandedEventDetails}
+                      isEditing={isEditing}
+                      editFields={editFields}
+                      onEdit={() => handleEdit(event)}
+                      onSave={handleSave}
+                      onCancel={() => setIsEditing(false)}
+                      onFieldChange={handleFieldChange}
+                      onDelete={handleDeleteClick}
+                    />
+
+                    {/* Selected Services */}
+                    <SelectedServices
+                      selectedServiceObjs={selectedServiceObjs}
+                      removingServiceId={removingServiceId}
+                      handleRemoveService={handleRemoveService}
+                      handleBookNow={() => handleBookNow(event.id)}
+                      getMinPrice={getMinPrice}
+                      formatCurrency={formatCurrency}
+                    />
+
+                    {/* Available Services */}
+                    <AvailableServices
+                      services={services}
+                      expandedEventDetails={expandedEventDetails}
+                      addingServiceId={addingServiceId}
+                      handleAddService={async (service) => {
+                        if (!expandedEventId || !expandedEventDetails || selectedServiceIds.includes(service.id)) return;
+                        setAddingServiceId(service.id);
+                        try {
+                          // Gọi API và lấy về response object (id thực nằm trong response.data)
+                          const response = await dispatch(
+                            addServiceToPlanning({ planning_id: expandedEventId, service_id: service.id })
+                          ).unwrap();
+                          const sessionServiceId = typeof response === "string" ? response : String(response.data);
+                          setExpandedEventDetails(prev => prev ? {
+                            ...prev,
+                            sesstionServices: [
+                              ...prev.sesstionServices,
+                              {
+                                id: String(sessionServiceId), // luôn là string
+                                planningId: expandedEventId,
+                                serviceId: service.id,
+                              }
+                            ]
+                          } : prev);
+                        } catch (err) {
+                          toast.error("Thêm dịch vụ thất bại!");
+                        } finally {
+                          setAddingServiceId(null);
+                        }
+                      }}
+                      selectedServiceIds={selectedServiceIds}
+                      cartServiceIds={cartServiceIds}
+                      getMinPrice={getMinPrice}
+                      formatCurrency={formatCurrency}
+                    />
+                  </>
                 )}
-              </button>
-            </div>
+              </EventCard>
+            ))}
+          </div>
 
-            {expandedEventId === event.id && expandedEventDetails && (
-              <div className="mt-4 space-y-6">
-                <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="font-semibold text-lg text-gray-700 flex items-center gap-2">
-                      Thông tin chi tiết
-                    </h4>
-                    {!isEditing ? (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
-                      >
-                        Chỉnh sửa
-                      </button>
-                    ) : (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleSave}
-                          className="px-4 py-1 rounded-md bg-green-500 text-white hover:bg-green-600 transition"
-                        >
-                          Lưu
-                        </button>
-                        <button
-                          onClick={handleCancel}
-                          className="px-4 py-1 rounded-md bg-gray-300 text-gray-700 hover:bg-gray-400 transition"
-                        >
-                          Hủy
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Địa điểm</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{expandedEventDetails.location || "Chưa có"}</p>
-                        ) : (
-                          <input
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            value={editFields.location}
-                            onChange={e => setEditFields({ ...editFields, location: e.target.value })}
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Số lượng người tham gia</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{expandedEventDetails.aboutNumberPeople || "Chưa có"}</p>
-                        ) : (
-                          <input
-                            type="number"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            value={editFields.aboutNumberPeople}
-                            onChange={e => setEditFields({ ...editFields, aboutNumberPeople: e.target.value })}
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Ngân sách</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{formatCurrency(expandedEventDetails.budget)}</p>
-                        ) : (
-                          <input
-                            type="number"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            value={editFields.budget}
-                            onChange={e => setEditFields({ ...editFields, budget: e.target.value })}
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Loại sự kiện</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{expandedEventDetails.typeOfEvent || "Chưa có"}</p>
-                        ) : (
-                          <input
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            value={editFields.typeOfEvent}
-                            onChange={e => setEditFields({ ...editFields, typeOfEvent: e.target.value })}
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Màu chủ đạo</label>
-                        {!isEditing ? (
-                          <span className="inline-block w-6 h-6 rounded-full border" style={{ background: expandedEventDetails.mainColor || '#ccc' }} />
-                        ) : (
-                          <input
-                            type="color"
-                            className="w-10 h-10 p-0 border-none bg-transparent"
-                            value={editFields.mainColor}
-                            onChange={e => setEditFields({ ...editFields, mainColor: e.target.value })}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Trạng thái</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{expandedEventDetails.status || "Chưa có"}</p>
-                        ) : (
-                          <select
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            value={editFields.status}
-                            onChange={e => setEditFields({ ...editFields, status: e.target.value })}
-                          >
-                            <option value="Planning">Đang Lên Kế Hoạch</option>
-                            <option value="Ongoing">Đang Diễn Ra</option>
-                            <option value="Completed">Đã Hoàn Thành</option>
-                          </select>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Mô tả</label>
-                        {!isEditing ? (
-                          <p className="text-base text-gray-700">{expandedEventDetails.description || "Chưa có"}</p>
-                        ) : (
-                          <textarea
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 min-h-[60px]"
-                            value={editFields.description}
-                            onChange={e => setEditFields({ ...editFields, description: e.target.value })}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Pagination */}
+          <div className="mt-8 flex justify-center gap-3">
+            <button
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              disabled={currentPage === 1}
+              className="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 transition-colors"
+            >
+              Trang trước
+            </button>
+            <span className="px-6 py-2 text-gray-700">Trang {currentPage}</span>
+            <button
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              disabled={planningData.length < pageSize}
+              className="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 transition-colors"
+            >
+              Trang sau
+            </button>
+          </div>
+        </>
+      )}
 
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-700 mb-4">Dịch vụ đã chọn</h4>
-                  {selectedServices[event.id]?.length > 0 ? (
-                    <div className="space-y-2">
-                      {selectedServices[event.id].map(service => (
-                        <div key={service.id} className="flex justify-between items-center p-2 bg-white rounded">
-                          <div>
-                            <p className="font-medium">{service.name}</p>
-                            <p className="text-sm text-gray-600">{service.description}</p>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <p className="font-medium">{formatCurrency(service.price)}</p>
-                            <button
-                              onClick={() => toggleService(event.id, service)}
-                              className="p-1 hover:bg-red-100 rounded-full text-red-500"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex justify-between items-center pt-2 border-t">
-                        <p className="font-medium">Tổng cộng:</p>
-                        <p className="font-medium text-lg">{formatCurrency(getTotalPrice(event.id))}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">Chưa có dịch vụ nào được chọn</p>
-                  )}
-                </div>
+      {/* Delete Confirmation Modal */}
+      <BaseModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setEventToDelete(null);
+        }}
+        title="Xác nhận xóa"
+        message=""
+      >
+        <div className="p-6">
+          <p className="text-gray-700 mb-6">
+            Bạn có chắc chắn muốn xóa sự kiện "{eventToDelete?.name}"? Hành động này không thể hoàn tác.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setEventToDelete(null);
+              }}
+              className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+            >
+              Hủy
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+            >
+              Xóa
+            </button>
+          </div>
+        </div>
+      </BaseModal>
 
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-medium text-gray-700 mb-4">Dịch vụ có sẵn</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mockServices.map(service => (
-                      <div
-                        key={service.id}
-                        className={`p-4 rounded-lg border ${isServiceSelected(event.id, service.id)
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 bg-white"
-                          }`}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h5 className="font-medium">{service.name}</h5>
-                            <p className="text-sm text-gray-600">{service.description}</p>
-                            <p className="text-sm font-medium mt-2">{formatCurrency(service.price)}</p>
-                          </div>
-                          <button
-                            onClick={() => toggleService(event.id, service)}
-                            className={`p-2 rounded-full ${isServiceSelected(event.id, service.id)
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                              }`}
-                          >
-                            {isServiceSelected(event.id, service.id) ? (
-                              <Minus className="h-4 w-4" />
-                            ) : (
-                              <Plus className="h-4 w-4" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </li>
-        )}
-        pageSize={5}
+      {/* Modal Booking */}
+      <BookingModal
+        show={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        bookingData={bookingData}
+        setBookingData={setBookingData}
+        services={services}
+        handleConfirmBooking={() => {
+          if (bookingData.some(b => !b.date || !b.start || !b.end)) {
+            alert('Vui lòng chọn đầy đủ ngày và giờ cho tất cả dịch vụ!');
+            return;
+          }
+          // Logic tiếp theo: chuyển sang thanh toán hoặc gọi API
+          console.log('Booking:', bookingData);
+          setShowBookingModal(false);
+        }}
       />
     </div>
   );

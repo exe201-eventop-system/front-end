@@ -1,7 +1,7 @@
 import React from 'react';
-import SidebarDashboard from "../components/SidebarDashboard";
+import SidebarDashboard from "../components/ui/SidebarDashboard";
 
-const DashboardLayout = ({ children }:  { children: React.ReactNode }) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">

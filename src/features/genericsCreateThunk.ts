@@ -1,14 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../config/axiosInstance";
-import { GenericResponse } from "../types/GenerictResponse";
+import axiosInstance from ".././utils/api/axiosInstance";
+import { GenericResponse } from "../types/Generict/GenerictResponse";
+import { toast } from "react-toastify";
 
-interface ThunkOptions<RequestType> {
-  onSuccess?: (result: string) => void;
+interface ThunkOptions<RequestType, ResponseType = void> {
   buildUrl?: (payload: RequestType) => string;
   config?: (payload: RequestType) => object;
-  onError?: (message: string) => void;
+  buildBody?: (payload: RequestType) => any;
+  onSuccess?: (response: GenericResponse<ResponseType>, payload: RequestType) => void;
+  onError?: (error: any, payload: RequestType) => void;
+  onFinally?: (payload: RequestType) => void;
 }
-
 // ===============================
 // Generic GET
 // ===============================
@@ -23,20 +25,14 @@ export function createGetThunk<ResponseType, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
-        console.log("🔹 [PlanningThunk] GET to:", url);
-        console.log(
-          "🔹 [PlanningThunk] Payload gửi đi:",
-          JSON.stringify(payload, null, 2)
-        );
         const res = await axiosInstance.get<GenericResponse<ResponseType>>(url, config);
-        console.log("data nè", res.data);
+        console.log("res", res.data);
         return res.data;
       } catch (err) {
         const error = err as unknown as {
           response?: { data?: { message?: string } };
         };
         const message = error.response?.data?.message || "GET request failed";
-        options?.onError?.(message);
         console.error(message);
         return rejectWithValue(message);
       }
@@ -50,20 +46,26 @@ export function createGetThunk<ResponseType, RequestType = void>(
 export function createPostThunk<ResponseType = void, RequestType = void>(
   typePrefix: string,
   defaultUrl: string,
-  options?: ThunkOptions<RequestType>
+  options?: ThunkOptions<RequestType, ResponseType>
 ) {
   return createAsyncThunk<GenericResponse<ResponseType>, RequestType, { rejectValue: string }>(
     typePrefix,
     async (payload, { rejectWithValue }) => {
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
+        const body = options?.buildBody?.(payload) ?? payload;
         const config = options?.config?.(payload);
-
+        console.groupCollapsed(`[POST THUNK] ${typePrefix}`);
+        console.log("🔹 URL:", url);
+        console.log("🔹 Payload:", payload);
+        console.log("🔹 Config:", config);
         const res = await axiosInstance.post<GenericResponse<ResponseType>>(
           url,
-          payload,
+          body,
           config
-        );       
+        );
+        console.log("res", res.data);
+        options?.onSuccess?.(res.data, payload);
         return res.data;
       } catch (err) {
         const error = err as unknown as {
@@ -76,7 +78,6 @@ export function createPostThunk<ResponseType = void, RequestType = void>(
           message: error.response?.data?.message
         });
         const message = error.response?.data?.message || "POST request failed";
-        options?.onError?.(message);
         console.error(message);
         return rejectWithValue(message);
       }
@@ -99,14 +100,15 @@ export function createPutThunk<ResponseType, RequestType = void>(
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
         const res = await axiosInstance.put<GenericResponse<ResponseType>>(url, payload, config);
+        console.log("data nè nha:", res.data.data);
         return res.data;
       } catch (err) {
         const error = err as unknown as {
           response?: { data?: { message?: string } };
         };
         const message = error.response?.data?.message || "PUT request failed";
-        options?.onError?.(message);
         console.error(message);
+        toast.error(message);
         return rejectWithValue(message);
       }
     }
@@ -138,8 +140,8 @@ export function createPatchThunk<ResponseType, RequestType = void>(
           response?: { data?: { message?: string } };
         };
         const message = error.response?.data?.message || "PATCH request failed";
-        options?.onError?.(message);
         console.error(message);
+        toast.error(message);
         return rejectWithValue(message);
       }
     }
@@ -160,6 +162,12 @@ export function createDeleteThunk<ResponseType, RequestType = void>(
       try {
         const url = options?.buildUrl?.(payload) ?? defaultUrl;
         const config = options?.config?.(payload);
+
+        // ✅ Log thông tin đã truyền đi
+        console.log("[DELETE Thunk] Payload:", payload);
+        console.log("[DELETE Thunk] URL:", url);
+        console.log("[DELETE Thunk] Config:", config);
+
         const res = await axiosInstance.delete<GenericResponse<ResponseType>>(url, config);
         return res.data;
       } catch (err) {
@@ -167,10 +175,13 @@ export function createDeleteThunk<ResponseType, RequestType = void>(
           response?: { data?: { message?: string } };
         };
         const message = error.response?.data?.message || "DELETE request failed";
-        options?.onError?.(message);
-        console.error(message);
+
+        console.error("[DELETE Thunk] Error:", message);
+        toast.error(message);
+
         return rejectWithValue(message);
       }
     }
   );
 }
+

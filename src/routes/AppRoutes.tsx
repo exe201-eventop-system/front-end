@@ -10,26 +10,25 @@ import Blogs from '../pages/Blogs/Blogs.tsx';
 import Planning from '../pages/Planning/Planning.tsx';
 import Service from '../pages/Service/Service.tsx';
 import ConfirmEmailPage from '../pages/Auth/component/ConfirmEmailPage.tsx';
-//import Services from '../pages/Service/Services.tsx';
 import Services from '../pages/Service/Services.tsx';
 import Blog from '../pages/Blogs/Blog.tsx';
 import Profile from '../pages/Profile/Profile.tsx';
 import Cart from '../pages/Cart/Cart.tsx';
 import NotFound from '../pages/Error/NotFound.tsx';
 import ServerError from '../pages/Error/ServerError.tsx';
-import Supplier from '../pages/Supplier/Supplier.tsx';
-import Analytics from '../pages/Dashboard/Analytics.tsx';
+import Supplier from '../pages/Supplier/Suppliers.tsx';
+import Analytics from '../pages/Dashboard/Admin/Analytics.tsx';
 import SupplierDetail from '../pages/Supplier/SupplierDetail.tsx';
 import History from '../pages/History/History.tsx';
-
-// Import new Supplier pages
-// import Statistics from '../pages/Supplier/Statistics.tsx';
-// import ServiceManagement from '../pages/Supplier/ServiceManagement.tsx';
-// import ServiceRequests from '../pages/Supplier/ServiceRequests.tsx';
-// import Feedback from '../pages/Supplier/Feedback.tsx';
-// import Communication from '../pages/Supplier/Communication.tsx';
-// import BlogManagement from '../pages/Supplier/BlogManagement.tsx';
-// import Advertisement from '../pages/Supplier/Advertisement.tsx';
+import PaymentSuccess from '../pages/Payment/PaymentSuccess';
+import ProtectedRoute from './ProtectedRoute';
+import Schedule from '../pages/Dashboard/Supplier/Schedule';
+import { UserRole } from '../types/Auth/User.type.ts';
+import DashboardSupplier from '../pages/Dashboard/Supplier/DashboardSupplier.tsx';
+import Transaction from '../pages/Dashboard/Admin/Transaction.tsx';
+import Feedback from '../pages/Dashboard/Admin/Feedback.tsx';
+import BlogManagement from '../pages/Dashboard/Supplier/Blog/BlogManagement.tsx';
+import UserManagement from '../pages/Dashboard/Admin/UserManagement.tsx';
 
 const AppRoutes: React.FC = () => {
 
@@ -51,22 +50,21 @@ const AppRoutes: React.FC = () => {
         <Route path="/suppliers" element={<MainLayout><Supplier /></MainLayout>} />
         <Route path="/supplier/:id" element={<MainLayout><SupplierDetail /></MainLayout>} />
         <Route path="/history" element={<MainLayout><History /></MainLayout>} />
+        <Route path="/payment-success" element={<MainLayout><PaymentSuccess /></MainLayout>} />
 
         {/* Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout><Analytics /></DashboardLayout>} />
-        <Route path="/dashboard/analytics" element={<DashboardLayout><Analytics /></DashboardLayout>} />
+        <Route path="/dashboard" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><Analytics /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/customer-feedback" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><Feedback /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/transaction" element={<ProtectedRoute allowedRoles={[UserRole.Admin, UserRole.Supplier]}><DashboardLayout><Transaction /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/management-user" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><UserManagement /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/supplier/schedule" element={<ProtectedRoute allowedRoles={[UserRole.Supplier]}><DashboardLayout><Schedule /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/supplier/management-blog" element={<ProtectedRoute allowedRoles={[UserRole.Supplier]}><DashboardLayout><BlogManagement /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/supplier/dashboard" element={<ProtectedRoute allowedRoles={[UserRole.Supplier]}><DashboardLayout><DashboardSupplier /></DashboardLayout></ProtectedRoute>} />
 
-        {/* Supplier Routes */}
-        {/* <Route path="/supplier/statistics" element={<DashboardLayout><Statistics /></DashboardLayout>} />
-        <Route path="/supplier/services" element={<DashboardLayout><ServiceManagement /></DashboardLayout>} />
-        <Route path="/supplier/requests" element={<DashboardLayout><ServiceRequests /></DashboardLayout>} />
-        <Route path="/supplier/feedback" element={<DashboardLayout><Feedback /></DashboardLayout>} />
-        <Route path="/supplier/communication" element={<DashboardLayout><Communication /></DashboardLayout>} />
-        <Route path="/supplier/blog" element={<DashboardLayout><BlogManagement /></DashboardLayout>} />
-        <Route path="/supplier/advertisement" element={<DashboardLayout><Advertisement /></DashboardLayout>} /> */}
 
         {/* Error Pages */}
         <Route path="/500" element={<ServerError />} />
+        <Route path="/feedback" element={<Feedback />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

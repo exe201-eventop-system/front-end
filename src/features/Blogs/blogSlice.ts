@@ -1,12 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Blog } from '../../types/Blog.type';
-import { Blogs, BlogDetail } from './blogThunks';
+import { BlogQueryResult } from '../../types/Blogs/Blog.type';
+import { getAllBlog, getBlogDetail } from './blogThunks';
 
 interface BlogState {
-  blogs: Blog[];
+  blogs: BlogQueryResult[];
   loading: boolean;
   error: string | null;
-  selectedBlog: Blog | null;
+  selectedBlog: BlogQueryResult | null;
+  item_amount: number;
+  page_count: number;
+  current_page: number;
 }
 
 const initialState: BlogState = {
@@ -14,6 +17,9 @@ const initialState: BlogState = {
   loading: false,
   error: null,
   selectedBlog: null,
+  item_amount: 0,
+  page_count: 1,
+  current_page: 1,
 };
 
 const blogSlice = createSlice({
@@ -26,27 +32,28 @@ const blogSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Blog list actions (using Blogs namespace)
-      .addCase(Blogs.pending, (state) => {
+      .addCase(getAllBlog.pending, (state) => {
         state.loading = true;
       })
-      .addCase(Blogs.fulfilled, (state) => {
+      .addCase(getAllBlog.fulfilled, (state, action) => {
         state.loading = false;
-        // state.blogs = action.payload.data;
+        state.blogs = action.payload.data?.content || [];
+        state.item_amount = action.payload.data?.item_amount || 0;
+        state.page_count = action.payload.data?.page_count || 1;
+        state.current_page = action.payload.data?.current_page || 1;
       })
-      .addCase(Blogs.rejected, (state, action) => {
+      .addCase(getAllBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Có lỗi';
       })
-      // BlogDetail actions (using BlogDetail namespace)
-      .addCase(BlogDetail.pending, (state) => {
+      .addCase(getBlogDetail.pending, (state) => {
         state.loading = true;
       })
-      .addCase(BlogDetail.fulfilled, (state) => {
+      .addCase(getBlogDetail.fulfilled, (state, action) => {
         state.loading = false;
-        // state.selectedBlog = action.payload.data; // Lưu blog chi tiết
+        state.selectedBlog = action.payload.data || null;
       })
-      .addCase(BlogDetail.rejected, (state, action) => {
+      .addCase(getBlogDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Có lỗi khi lấy chi tiết bài viết';
       });
