@@ -35,7 +35,6 @@ export const featuredCategories = [
   { name: "Tiệc cưới", icon: "💒", count: "10+" },
   { name: "Âm nhạc", icon: "🎤", count: "15+" },
   { name: "Sinh nhật", icon: "🎂", count: "10+" },
-  { name: "Team Building", icon: "🤝", count: "7+" },
   { name: "Triển lãm", icon: "🎨", count: "4+" },
   { name: "Lễ hội", icon: "🎉", count: "8+" }
 ];

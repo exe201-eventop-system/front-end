@@ -9,7 +9,6 @@ import Categories from "./component/Categories";
 import ChooseUs from "./component/ChooseUs";
 import PartnerBrands from "./component/PartnerBrands";
 import FAQ from "./component/FAQ";
-import SuccessStories from "./component/SuccessStories";
 
 const Home = () => {
   return (
@@ -24,7 +23,6 @@ const Home = () => {
       <ChooseUs />
       <PartnerBrands />
       <FAQ />
-      <SuccessStories />
     </div>
   );
 };

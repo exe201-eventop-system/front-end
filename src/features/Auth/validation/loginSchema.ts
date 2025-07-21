@@ -1,19 +1,23 @@
 import * as yup from "yup";
 
 export const loginSchema = yup.object({
-  email: yup
+  phone_number: yup
     .string()
-    .required("Vui lòng nhập email hoặc tên đăng nhập")
+    .required("Vui lòng nhập email hoặc số điện thoại")
     .test(
-      "is-email-or-username",
-      "Email hoặc tên đăng nhập không hợp lệ",
+      "is-email-or-phone",
+      "Email hoặc số điện thoại không hợp lệ",
       (value) => {
         if (!value) return false;
 
-        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-        const isUsername = /^[a-zA-Z0-9_.-]{3,30}$/.test(value); 
+        // Kiểm tra email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmail = emailRegex.test(value);
 
-        return isEmail || isUsername;
+        // Kiểm tra số điện thoại (10-13 số)
+        const isPhone = /^[0-9]{10,13}$/.test(value);
+
+        return isEmail || isPhone;
       }
     ),
   password: yup

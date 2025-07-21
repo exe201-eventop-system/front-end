@@ -6,7 +6,7 @@ const Categories = () => {
         <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center mb-12">Danh Mục Nổi Bật</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-4xl mx-auto">
                     {featuredCategories.map((category, index) => (
                         <motion.div
                             key={index}

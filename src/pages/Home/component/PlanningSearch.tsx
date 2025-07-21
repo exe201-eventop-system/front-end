@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NavButton from "../../../components/Button";
+import NavButton from "../../../components/ui/Button";
 import { motion } from "framer-motion";
 import BackGroundHome from "../../../assets/BackGroundHome.jpg";
 
@@ -34,7 +34,7 @@ const PlaningSearch = ({ onSearch }: PlaningSearchProps) => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-20 text-center px-4 max-w-4xl mx-auto"
       >
-        <div className="space-y-6 bg-black/30 backdrop-blur-sm p-7 rounded-2xl shadow-2xl mt-10">
+        <div className="space-y-6 bg-black/30 backdrop-blur-sm p-7 rounded-2xl shadow-2xl mt-20">
           <h2 className="text-white text-xl md:text-3xl font-semibold tracking-wider">
             Chào mừng đến với
           </h2>

@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import LoginForm from "./component/LoginForm";
+import LoginForm from "./component/SignInForm";
 import { useEffect } from "react";
-import RegisterForm from "./component/RegisterForm";
+import RegisterForm from "./component/SignUpForm";
 import backgroundAuth from "../../assets/backgroundAuth.jpg";
 import { RootState } from "../../features/store";
 import { switchAuthType } from "../../features/Auth/authSlice";

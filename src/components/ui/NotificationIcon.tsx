@@ -1,4 +1,3 @@
-// components/CartIcon.tsx
 import { MdNotificationsNone } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { RootState } from "../../features/store";

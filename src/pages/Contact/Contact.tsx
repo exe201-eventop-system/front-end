@@ -24,206 +24,145 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
+    <div className="relative mt-20 min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-100 py-16 px-4">
+      {/* Hiệu ứng nền */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-200/30 to-purple-100/30 rounded-full blur-3xl"
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-1/3 -left-1/3 w-2/3 h-2/3 bg-gradient-to-br from-purple-200/30 to-purple-100/30 rounded-full blur-3xl"
         />
         <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [90, 0, 90],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tr from-purple-100/30 to-pink-100/30 rounded-full blur-3xl"
+          animate={{ scale: [1.2, 1, 1.2], rotate: [90, 0, 90] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute -bottom-1/3 -right-1/3 w-2/3 h-2/3 bg-gradient-to-tr from-purple-100/30 to-pink-100/30 rounded-full blur-3xl"
         />
       </div>
 
-      <div className="max-w-7xl mx-auto relative">
+      <div className="w-full max-w-2xl z-10 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <h1 className="text-5xl font-bold mt-10 mb-4 text-gray-800">
+          <h1 className="text-4xl font-bold mb-4 text-center">
             Liên Hệ Với Chúng Tôi
           </h1>
-          <p className="text-lg text-gray-600">
-            Hãy để lại thông tin, chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            Hãy để lại thông tin, chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Thông tin liên hệ */}
+        {/* Form liên hệ */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          className="w-full bg-white/95 rounded-2xl shadow-2xl border border-purple-100 p-8 md:p-10 mb-10"
+        >
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="name" className="text-sm font-medium text-gray-700">Họ và tên</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all"
+                placeholder="Nhập họ và tên của bạn"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all"
+                placeholder="Nhập email của bạn"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="subject" className="text-sm font-medium text-gray-700">Chủ đề</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all"
+                placeholder="Nhập chủ đề"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="message" className="text-sm font-medium text-gray-700">Tin nhắn</label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all resize-none"
+                placeholder="Nhập tin nhắn của bạn"
+                required
+              />
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-400 text-white py-3 px-6 rounded-lg font-semibold flex items-center justify-center gap-2 shadow hover:shadow-lg hover:shadow-purple-200 transition-all text-lg"
+            >
+              <FiSend className="w-5 h-5" />
+              <span>Gửi tin nhắn</span>
+            </motion.button>
+          </form>
+        </motion.div>
+
+        {/* Thông tin liên hệ dạng 3 box nhỏ */}
+        <div className="w-full flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-purple-200 hover:border-purple-300 transition-all duration-500"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+            className="flex-1 min-w-[220px] max-w-xs bg-gradient-to-br from-purple-100 to-white rounded-2xl p-6 flex flex-col items-center shadow-lg border border-purple-100"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Thông Tin Liên Hệ
-            </h2>
-
-            <div className="space-y-6">
-              <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
-                className="flex items-center space-x-4 text-gray-700 bg-white p-4 rounded-xl transition-all duration-300 border border-purple-200 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100"
-              >
-                <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-3 rounded-full shadow-lg shadow-purple-100">
-                  <FiPhone className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-800">Điện thoại</h3>
-                  <p className="text-gray-600">+84 123 456 789</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
-                className="flex items-center space-x-4 text-gray-700 bg-white p-4 rounded-xl transition-all duration-300 border border-purple-200 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100"
-              >
-                <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-3 rounded-full shadow-lg shadow-purple-100">
-                  <FiMail className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-800">Email</h3>
-                  <p className="text-gray-600">contact@eventtop.com</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.02, y: -2 }}
-                className="flex items-center space-x-4 text-gray-700 bg-white p-4 rounded-xl transition-all duration-300 border border-purple-200 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100"
-              >
-                <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-3 rounded-full shadow-lg shadow-purple-100">
-                  <FiMapPin className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-800">Địa chỉ</h3>
-                  <p className="text-gray-600">
-                    123 Đường ABC, Quận XYZ<br />
-                    TP. Hồ Chí Minh, Việt Nam
-                  </p>
-                </div>
-              </motion.div>
+            <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-4 rounded-full shadow-lg mb-3">
+              <FiPhone className="w-7 h-7 text-white" />
             </div>
-
-            {/* Bản đồ */}
-            <div className="mt-8 rounded-xl overflow-hidden h-64 bg-white border border-purple-200 shadow-lg shadow-purple-100">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4241679834777!2d106.6981!3d10.7757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzMyLjUiTiAxMDbCsDQxJzUzLjMiRQ!5e0!3m2!1svi!2s!4v1234567890"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
+            <h3 className="font-semibold text-gray-800 mb-1">Điện thoại</h3>
+            <p className="text-gray-600 text-center">+84 123 456 789</p>
           </motion.div>
-
-          {/* Form liên hệ */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-purple-200 hover:border-purple-300 transition-all duration-500"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+            className="flex-1 min-w-[220px] max-w-xs bg-gradient-to-br from-purple-100 to-white rounded-2xl p-6 flex flex-col items-center shadow-lg border border-purple-100"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Gửi Tin Nhắn
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Họ và tên
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all duration-300"
-                  placeholder="Nhập họ và tên của bạn"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all duration-300"
-                  placeholder="Nhập email của bạn"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                  Chủ đề
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all duration-300"
-                  placeholder="Nhập chủ đề"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tin nhắn
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-purple-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all duration-300 resize-none"
-                  placeholder="Nhập tin nhắn của bạn"
-                  required
-                />
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="w-full bg-gradient-to-r from-purple-500 to-purple-400 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center space-x-2 hover:shadow-lg hover:shadow-purple-200 transition-all duration-300"
-              >
-                <FiSend className="w-5 h-5" />
-                <span>Gửi tin nhắn</span>
-              </motion.button>
-            </form>
+            <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-4 rounded-full shadow-lg mb-3">
+              <FiMapPin className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-1">Địa chỉ</h3>
+            <p className="text-gray-600 text-center">123 Đường ABC, Quận XYZ<br />TP. Hồ Chí Minh, Việt Nam</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+            className="flex-1 min-w-[220px] max-w-xs bg-gradient-to-br from-purple-100 to-white rounded-2xl p-6 flex flex-col items-center shadow-lg border border-purple-100"
+          >
+            <div className="bg-gradient-to-br from-purple-500 to-purple-400 p-4 rounded-full shadow-lg mb-3">
+              <FiMail className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-1">Email</h3>
+            <p className="text-gray-600 text-center">contact@eventtop.com</p>
           </motion.div>
         </div>
       </div>

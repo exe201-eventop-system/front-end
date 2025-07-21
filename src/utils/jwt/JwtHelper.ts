@@ -1,13 +1,8 @@
 import { jwtDecode } from "jwt-decode";
+import { JwtPayload, UserPayload } from "../../types/Auth/Token.type";
+import { UserRole } from "../../types/Auth/User.type";
 
-export interface JwtPayload {
-    sub?: string;
-    Email?: string;
-    Role?: string;
-    exp?: number;
-    iat?: number;
-    [key: string]: any;
-}
+
 
 export class JwtHelper {
     private token: string;
@@ -42,15 +37,45 @@ export class JwtHelper {
         return this.token;
     }
 
-    getEmail(): string | undefined {
-        return this.decode()?.email;
-    }
-
-    getRole(): string | undefined {
-        return this.decode()?.role;
-    }
-
     getSubject(): string | undefined {
         return this.decode()?.sub;
     }
 }
+export const handleTokenStorage = (token: string): void => {
+    if (!token) return;
+
+    localStorage.setItem("access_token", token);
+};
+
+export const getUserPayload = (): UserPayload | null => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return null;
+
+    try {
+        const helper = new JwtHelper(token);
+        const payload = helper.getPayload() as UserPayload | null;
+
+        if (payload && payload.Role !== undefined && payload.Role !== null) {
+            return payload;
+        }
+    } catch (error) {
+        console.error("Failed to parse token payload:", error);
+    }
+
+    return null;
+};
+
+export const getUserRole = (): UserRole => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return UserRole.Customer;
+    try {
+        const helper = new JwtHelper(token);
+        const payload = helper.getPayload() as UserPayload | null;
+        if (payload && payload.Role !== undefined && payload.Role !== null) {
+            return Number(payload.Role) as UserRole;
+        }
+    } catch (e) {
+    }
+    return UserRole.Customer;
+};
+

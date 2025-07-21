@@ -3,24 +3,22 @@ import {
   PlaningStep1Request,
   PlaningResponse,
   PlaningStep2Request,
-} from "../../types/Planning.type";
-import { toast } from "react-toastify";
-import { PaginationResult } from "../../types/PaginationResult.type";
+  AddServiceRequest,
+  DeleteServiceRequest,
+
+} from "../../types/Planning/Planning.type";
+import { PaginationResult } from "../../types/Generict/PaginationResult.type";
+
 
 export const createPlanningStep1 = createPostThunk<PlaningResponse, PlaningStep1Request>(
-  "planning/step-1",
-  "planning/step-1",
-  {
-    onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
-  }
+  "planning/step1",
+  "planning/step1",
+
 );
 
 export const createPlanningStep2 = createPutThunk<PlaningResponse, PlaningStep2Request>(
-  "planning/step-2",
-  "planning/step-2",
-  {
-    onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
-  }
+  "planning/step2",
+  "planning/step2",
 );
 
 export const getPlanning = createGetThunk<PaginationResult<PlaningResponse>, {
@@ -31,9 +29,6 @@ export const getPlanning = createGetThunk<PaginationResult<PlaningResponse>, {
 }>(
   "planning/get",
   "planning",
-  {
-    onError: (msg) => toast.error(`Đăng ký thất bại: ${msg}`),
-  }
 );
 
 export const getAPlanning = createGetThunk<PlaningResponse, { planningId: string }>(
@@ -41,22 +36,41 @@ export const getAPlanning = createGetThunk<PlaningResponse, { planningId: string
   "planning",
   {
     buildUrl: (payload) => `planning/${payload.planningId}`,
-    onError: (msg) => toast.error(`Không thể lấy thông tin chi tiết: ${msg}`),
   }
 );
-export const deletePlanning = createDeleteThunk<void, { planningId: string }>(
+export const deletePlanning = createDeleteThunk<boolean, { planningId: string }>(
   "planning/delete",
   "planning",
   {
     buildUrl: (payload) => `planning/${payload.planningId}`,
-    onError: (msg) => toast.error(`Không thể lấy thông tin chi tiết: ${msg}`),
   }
 );
 export const getNumberPlaning = createGetThunk<number, void>(
-  "planning/number",
-  "planning",
+  "planning/total-planning",
+  "planning/total-planning",
   {
-    buildUrl: () => `planning/number`,
-    onError: (msg) => toast.error(`Không thể lấy thông tin chi tiết: ${msg}`),
+    buildUrl: () => `planning/total-planning`,
+  }
+);
+
+export const addServiceToPlanning = createPostThunk<string, AddServiceRequest>(
+  'planning/addServiceToPlanning',
+  'planning/add-service',
+);
+
+export const deleteServiceFromPlanning = createDeleteThunk<void, DeleteServiceRequest>(
+  'planning/deleteServiceFromPlanning',
+  '', // dùng buildUrl nên defaultUrl để rỗng
+  {
+    buildUrl: ({ sessionId }) => `/planning/delete-service/${sessionId}`,
+    config: () => ({}), // nếu cần header thì thêm ở đây
+  }
+);
+
+export const acceptAIPlanning = createPutThunk<PlaningResponse, { planningId: string }>(
+  'planning/acceptAI',
+  'planning',
+  {
+    buildUrl: (payload) => `planning/${payload.planningId}/accept`,
   }
 );

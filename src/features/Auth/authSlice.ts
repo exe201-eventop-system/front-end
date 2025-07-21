@@ -6,30 +6,42 @@ import {
   fetchProvinces,
   fetchWards,
   signIn,
+  getProfile,
+  updateProfile,
 } from "./authThunks";
-import { UserRole } from "../../types/User.type";
-import { JwtHelper } from "../../utils/jwt/JwtHelper";
+import { handleTokenStorage } from "../../utils/jwt/JwtHelper";
+import { UserProfile } from "../../types/Auth/User.type";
 
 interface AuthState {
   isAuthenticated: boolean;
-  access_token: string | null;
   isLoading?: boolean;
   error: string | null;
+  user: UserProfile;
+  errorMessage: string | null;
   authType: "login" | "register";
   provinces: { code: number; name: string }[];
   districts: { code: number; name: string }[];
   wards: { code: number; name: string }[];
+  status: 'idle' | 'pending' | 'succeeded' | 'failed';
 }
 
 const initialState: AuthState = {
   isAuthenticated: localStorage.getItem("access_token") !== null,
-  access_token: localStorage.getItem("access_token"),
+  user: {
+    email: '',
+    user_name: '',
+    address: '',
+    avatar: '',
+    phone_number: '',
+  },
   authType: "login",
   isLoading: false,
   error: null,
+  errorMessage: null,
   provinces: [],
   districts: [],
   wards: [],
+  status: 'idle',
 };
 
 const authSlice = createSlice({
@@ -38,10 +50,10 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.isAuthenticated = false;
-      state.access_token = null;
       state.error = null;
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("user_role");
+      state.errorMessage = null;
+      localStorage.clear();
+      state.status = 'idle';
     },
     setAuthType: (state, action) => {
       state.authType = action.payload;
@@ -55,62 +67,80 @@ const authSlice = createSlice({
       } else {
         state.authType = state.authType === "login" ? "register" : "login";
       }
+      state.status = 'idle';
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signIn.pending, (state) => {
         state.error = null;
+        state.errorMessage = null;
+        state.status = 'pending';
       })
-      .addCase(signIn.fulfilled, (state, action) => {
+      .addCase(getProfile.fulfilled, (state, action) => {
         state.isAuthenticated = true;
-      
-        const token = action.payload.data?.access_token ?? "";
-        localStorage.setItem("access_token", token);
-      
-        const helper = new JwtHelper(token);
-        const payload = helper.getPayload();
-      
-        const roleFromToken = payload?.Role;
-      
-        const isValidRole = Object.values(UserRole).includes(roleFromToken as UserRole);
-      
-        const roleToStore = isValidRole ? (roleFromToken as UserRole) : null;
-      
-        localStorage.setItem("user_role", roleToStore ?? "");
-
-      
+        state.status = "succeeded";
+        state.user = action.payload.data ?? {
+          email: '',
+          user_name: '',
+          address: '',
+          avatar: '',
+          phone_number: '',
+        };
 
       })
-      
-
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload.data ?? {
+          email: '',
+          user_name: '',
+          address: '',
+          avatar: '',
+          phone_number: '',
+        };
+      })
+      .addCase(signIn.rejected, (state, action) => {
+        state.isAuthenticated = false;
+        state.error = action.payload ?? "Unknown error";
+        state.errorMessage = action.payload as string || "Unknown error";
+        state.status = 'failed';
+      })
+      .addCase(signIn.fulfilled, (state) => {
+        state.isAuthenticated = true;
+        state.status = 'failed';
+      })
+      .addCase(signUp.pending, (state) => {
+        state.error = null;
+        state.errorMessage = null;
+        state.status = 'pending';
+      })
+      .addCase(signUp.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.error = null; // Clear any previous errors
+      })
       .addCase(signUp.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.access_token = null;
         state.error = action.payload ?? "Unknown error";
+        state.errorMessage = action.payload as string || "Unknown error";
+        state.status = 'failed';
       })
 
       // Xử lý confirmEmail
+      .addCase(confirmEmail.pending, (state) => {
+        state.status = 'pending';
+        state.error = null;
+        state.errorMessage = null;
+      })
       .addCase(confirmEmail.fulfilled, (state, action) => {
-        const token = action.payload.data?.access_token ?? "";
-
         state.isAuthenticated = true;
-        localStorage.setItem("access_token", token);
-
-
-        const helper = new JwtHelper(token);
-        const payload = helper.getPayload();
-
-        const roleFromToken = payload?.role;
-        const isValidRole = Object.values(UserRole).includes(roleFromToken as UserRole);
-        const roleToStore = isValidRole ? (roleFromToken as UserRole) : null;
-
-        localStorage.setItem("user_role", roleToStore ?? "");
+        const token = action.payload.data?.access_token ?? "";
+        handleTokenStorage(token);
       })
       .addCase(confirmEmail.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.access_token = null;
         state.error = action.payload ?? "Xác nhận email thất bại";
+        state.errorMessage = action.payload ?? "Xác nhận email thất bại";
+        state.status = 'failed';
       })
       .addCase(fetchProvinces.fulfilled, (state, action) => {
         state.provinces = action.payload;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import BaseModal from "../../../components/BaseModal";
+import BaseModal from "../../../components/ui/BaseModal";
 import { useDispatch } from 'react-redux';
-import Button from "../../../components/Button";
-import { PlaningStep1Request } from "../../../types/Planning.type";
+import Button from "../../../components/ui/Button";
+import { PlaningStep1Request } from "../../../types/Planning/Planning.type";
 import { createPlanningStep1 } from '../../../features/Planning/planningThunks';
 import { AppDispatch } from '../../../features/store';
 
@@ -26,14 +26,14 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-     await dispatch(createPlanningStep1(data)).unwrap();
-      onClose();
-      setEventName("");
-      setDescription("");
+    await dispatch(createPlanningStep1(data)).unwrap();
+    onClose();
+    setEventName("");
+    setDescription("");
   };
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="Tạo Sự Kiện Mới">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="Tạo Sự Kiện Mới" message="">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Event Name */}
         <div className="space-y-2">
@@ -76,7 +76,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
             Hủy
           </button>
           <Button
-          color="purple-white"
+            color="purple-white"
             typeButon="submit"
             isActive={true}
           >
