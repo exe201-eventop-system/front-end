@@ -4,10 +4,3 @@ export interface Supplier {
   location: string;
   isVerify: boolean;
 }
-type TimeSlot = {
-  date: string; // yyyy-MM-dd
-  busy: {
-    start: string; // "HH:mm"
-    end: string;   // "HH:mm"
-  }[];
-};
