@@ -49,6 +49,8 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
         navigate("/supplier/dashboard", { replace: true });
       } else if (role === UserRole.Admin) {
         navigate("/dashboard", { replace: true });
+      }else if (role === UserRole.Demo) {
+        navigate("/dashboard", { replace: true });
       }
     } else {
       setStatus("error");

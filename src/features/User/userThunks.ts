@@ -13,8 +13,8 @@ export const getAllUser = createGetThunk<PaginationResult<UserAllInfo>, GetAllUs
     {
         buildUrl: (params) => {
             const query = new URLSearchParams();
-            query.append('page', (params.page ?? 1).toString());
-            query.append('page_size', (params.page_size ?? 5).toString());
+            query.append('PageSize', (params.page_size ?? 5).toString());
+            query.append('PageNumber', (params.page ?? 1).toString());
             if (params.search) query.append('search', params.search);
             return `users?${query.toString()}`;
         }
