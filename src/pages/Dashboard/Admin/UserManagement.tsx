@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../features/store';
 import {
@@ -7,7 +7,6 @@ import {
     Typography,
     Card,
     CardContent,
-    Button,
     Table,
     TableBody,
     TableCell,
@@ -16,17 +15,13 @@ import {
     TableRow,
     Paper,
     CircularProgress,
-    TextField,
-    InputAdornment,
 } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
 import { UserRole } from '../../../types/Auth/User.type';
 import Pagination from '../../../components/common/Pagination';
 import { getAllUser } from '../../../features/User/userThunks';
-import { setCurrentPage, setSearchTerm } from '../../../features/User/userSlice';
+import { setCurrentPage } from '../../../features/User/userSlice';
 
 const getRoleLabel = (role: string | UserRole) => {
-    // Xử lý cả string và enum
     const roleString = typeof role === 'string' ? role : role.toString();
 
     switch (roleString) {
@@ -35,13 +30,13 @@ const getRoleLabel = (role: string | UserRole) => {
             return 'Admin';
         case 'Supplier':
         case UserRole.Supplier.toString():
-            return 'Supplier';
+            return 'Nhà cung cấp';
         case 'Customer':
         case UserRole.Customer.toString():
-            return 'Customer';
+            return 'Khách hàng';
         case 'Inspector':
         case UserRole.Inspector.toString():
-            return 'Inspector';
+            return 'Kiểm duyệt';
         default:
             return roleString || 'Unknown';
     }
@@ -50,100 +45,39 @@ const getRoleLabel = (role: string | UserRole) => {
 const UserManagement: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { users, loading, error, filter } = useSelector((state: RootState) => state.user);
-    const [searchValue, setSearchValue] = useState('');
 
-    // Debug logs
-    console.log('=== UserManagement Render ===');
-    console.log('Users state:', users);
-    console.log('Pagination info:', {
-        current_page: users?.current_page,
-        page_count: users?.page_count,
-        page_size: users?.page_size,
-        item_amount: users?.item_amount,
-        content_length: users?.content?.length
-    });
-
+    // Gọi API chỉ khi mount lần đầu
     useEffect(() => {
-        console.log('=== useEffect triggered ===');
-        console.log('Filter:', filter);
         dispatch(getAllUser({
             page: filter.page,
             page_size: filter.page_size,
             search: filter.search,
         }));
-    }, [dispatch, filter.page, filter.page_size, filter.search]);
+        // eslint-disable-next-line
+    }, []);
 
     const handlePageChange = (page: number) => {
-        console.log('Page change to:', page);
+        if (page < 1) return; // Không cho phép page nhỏ hơn 1
+        console.log('page', page);
         dispatch(setCurrentPage(page));
+        dispatch(getAllUser({
+            page: page,
+            page_size: filter.page_size,
+            search: filter.search,
+        }));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setSearchValue(value);
-    };
-
-    const handleSearchSubmit = () => {
-        console.log('Search submitted:', searchValue);
-        dispatch(setSearchTerm(searchValue));
-    };
-
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            handleSearchSubmit();
-        }
-    };
-
-    // Kiểm tra điều kiện hiển thị
     const hasUsers = users?.content && users.content.length > 0;
     const showPagination = users?.page_count && users.page_count > 1;
-
-    console.log('Render conditions:', { hasUsers, showPagination, loading, error });
 
     return (
         <Container maxWidth="lg" sx={{ mt: 6, mb: 4 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 4 }}>
-                <Typography variant="h4" fontWeight={700} color="primary.main" gutterBottom>
-                    Người dùng hệ thống
+                <Typography variant="h6" fontWeight={600} gutterBottom>
+                    Người dùng
                 </Typography>
             </Box>
 
-            {/* Search Bar */}
-            <Card sx={{ borderRadius: 4, boxShadow: 3, mb: 3 }}>
-                <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <TextField
-                            fullWidth
-                            placeholder="Tìm kiếm người dùng theo tên, email..."
-                            value={searchValue}
-                            onChange={handleSearchChange}
-                            onKeyPress={handleKeyPress}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            sx={{ flexGrow: 1 }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={handleSearchSubmit}
-                            sx={{
-                                borderRadius: 2,
-                                fontWeight: 600,
-                                px: 3,
-                                py: 1.5,
-                                minWidth: 120
-                            }}
-                        >
-                            Tìm kiếm
-                        </Button>
-                    </Box>
-                </CardContent>
-            </Card>
 
             <Card sx={{ borderRadius: 4, boxShadow: 3 }}>
                 <CardContent sx={{ p: 0 }}>
@@ -163,21 +97,11 @@ const UserManagement: React.FC = () => {
                                 Không có người dùng nào.
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Debug Info:
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
-                                Users: {JSON.stringify(users, null, 2)}
+                                Không có người dùng nào.
                             </Typography>
                         </Box>
                     ) : (
                         <>
-                            {/* Pagination Info */}
-                            <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderBottom: '1px solid #e9ecef' }}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Hiển thị {users.content.length} người dùng (Trang {users.current_page}/{users.page_count} - Tổng {users.item_amount} người dùng)
-                                </Typography>
-                            </Box>
-
                             <TableContainer component={Paper} sx={{ borderRadius: 4, boxShadow: 'none' }}>
                                 <Table>
                                     <TableHead>
@@ -209,7 +133,6 @@ const UserManagement: React.FC = () => {
                                 </Table>
                             </TableContainer>
 
-                            {/* Pagination */}
                             {showPagination && (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 3, borderTop: '1px solid #e5e7eb' }}>
                                     <Pagination

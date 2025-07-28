@@ -55,7 +55,7 @@ const AppRoutes: React.FC = () => {
         {/* Dashboard Routes */}
         <Route path="/dashboard" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><Analytics /></DashboardLayout></ProtectedRoute>} />
         <Route path="/customer-feedback" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><Feedback /></DashboardLayout></ProtectedRoute>} />
-        <Route path="/transaction" element={<ProtectedRoute allowedRoles={[UserRole.Admin, UserRole.Supplier]}><DashboardLayout><Transaction /></DashboardLayout></ProtectedRoute>} />
+        <Route path="/transaction" element={<ProtectedRoute allowedRoles={[UserRole.Admin, UserRole.Demo]}><DashboardLayout><Transaction /></DashboardLayout></ProtectedRoute>} />
         <Route path="/management-user" element={<ProtectedRoute allowedRoles={[UserRole.Admin]}><DashboardLayout><UserManagement /></DashboardLayout></ProtectedRoute>} />
         <Route path="/supplier/schedule" element={<ProtectedRoute allowedRoles={[UserRole.Supplier]}><DashboardLayout><Schedule /></DashboardLayout></ProtectedRoute>} />
         <Route path="/supplier/management-blog" element={<ProtectedRoute allowedRoles={[UserRole.Supplier]}><DashboardLayout><BlogManagement /></DashboardLayout></ProtectedRoute>} />

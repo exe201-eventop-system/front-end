@@ -23,7 +23,7 @@ const initialState: UserState = {
     error: null,
     filter: {
         page: 1,
-        page_size: 5,
+        page_size: 10,
         search: '',
     },
 };
