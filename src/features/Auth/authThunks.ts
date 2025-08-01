@@ -15,8 +15,6 @@ import {
   Province,
   District,
   Ward,
-  ProvinceDetailResponse,
-  DistrictDetailResponse,
 } from "../../types/Auth/Location.type";
 import { User, UserProfile } from "../../types/Auth/User.type";
 
@@ -62,26 +60,52 @@ export const confirmEmail = createPostThunk<
 export const fetchProvinces = createAsyncThunk<Province[]>(
   "location/fetchProvinces",
   async (_, { rejectWithValue }) => {
-    const response = await axios.get<Province[]>(
-      `https://provinces.open-api.vn/api/p`
-    );
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      return rejectWithValue("Response is not an array");
+    try {
+      // Sử dụng GitHub API - hoạt động cả localhost và Vercel
+      const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+
+      const data = response.data;
+      if (data && Array.isArray(data)) {
+        const provinces = data.map((item: any, index: number) => ({
+          code: index + 1,
+          name: item.Name
+        }));
+        return provinces;
+      } else {
+        throw new Error("Invalid data format");
+      }
+
+    } catch (error) {
+      console.error("Error fetching provinces:", error);
+      return rejectWithValue("Không thể tải dữ liệu tỉnh/thành phố");
     }
   }
 );
+
 export const fetchDistricts = createAsyncThunk<District[], number>(
   "location/fetchDistricts",
   async (provinceCode, { rejectWithValue }) => {
-    const response = await axios.get<ProvinceDetailResponse>(
-      `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
-    );
-    if (response.data?.districts) {
-      return response.data.districts;
-    } else {
+    try {
+      // Sử dụng GitHub API cho districts
+      const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+
+      const data = response.data;
+      if (data && Array.isArray(data)) {
+        const province = data[provinceCode - 1]; // provinceCode bắt đầu từ 1
+        if (province && province.Districts) {
+          const districts = province.Districts.map((item: any, index: number) => ({
+            code: index + 1,
+            name: item.Name,
+            provinceCode: provinceCode
+          }));
+          return districts;
+        }
+      }
+
       return rejectWithValue("Không có dữ liệu quận/huyện");
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+      return rejectWithValue("Không thể tải dữ liệu quận/huyện");
     }
   }
 );
@@ -89,13 +113,33 @@ export const fetchDistricts = createAsyncThunk<District[], number>(
 export const fetchWards = createAsyncThunk<Ward[], number>(
   "location/fetchWards",
   async (districtCode, { rejectWithValue }) => {
-    const response = await axios.get<DistrictDetailResponse>(
-      `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`
-    );
-    if (response.data?.wards) {
-      return response.data.wards;
-    } else {
+    try {
+      // Sử dụng GitHub API cho wards
+      const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+
+      const data = response.data;
+      if (data && Array.isArray(data)) {
+        // Tìm district trong tất cả provinces
+        for (const province of data) {
+          if (province.Districts) {
+            for (const district of province.Districts) {
+              if (district.Wards) {
+                const wards = district.Wards.map((item: any, index: number) => ({
+                  code: index + 1,
+                  name: item.Name,
+                  districtCode: districtCode
+                }));
+                return wards;
+              }
+            }
+          }
+        }
+      }
+
       return rejectWithValue("Không có dữ liệu xã/phường");
+    } catch (error) {
+      console.error("Error fetching wards:", error);
+      return rejectWithValue("Không thể tải dữ liệu xã/phường");
     }
   }
 );
