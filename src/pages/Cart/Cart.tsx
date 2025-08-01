@@ -60,6 +60,7 @@ const Cart = () => {
         const customerPhone = customerProfile?.PhoneNumber || ""
         const customer_name = customerProfile?.UserName || ""
         const customer_address = customerProfile?.Address || ""
+
         groupedServices.forEach(service => {
             service.items.forEach(item => {
                 const selectedPackage = service.selectedPackages[item.cartItem];
@@ -71,9 +72,20 @@ const Cart = () => {
                 const rentStartTime = `${schedule.selectedDate}T${schedule.start}:00`;
                 const rentEndTime = `${schedule.selectedDate}T${schedule.end}:00`;
 
-                const durationInHours = (dayjs(rentEndTime).diff(dayjs(rentStartTime), 'minute')) / 60;
+                const packageType = getPackageType(selectedPackage);
+                let totalPrice = 0;
 
-                const totalPrice = selectedOption.price * durationInHours;
+                if (packageType === "hour") {
+                    // Dịch vụ theo giờ: nhân với số giờ đã chọn
+                    const durationInHours = (dayjs(rentEndTime).diff(dayjs(rentStartTime), 'minute')) / 60;
+                    const minimumHours = selectedOption.minimum_hours || 1;
+                    const actualHours = Math.max(durationInHours, minimumHours);
+                    totalPrice = selectedOption.price * actualHours;
+                } else if (packageType === "date" || packageType === "recurring") {
+                    // Dịch vụ theo ngày/tuần: lấy giá gốc, không nhân gì
+                    totalPrice = selectedOption.price;
+                }
+
                 usedServices.price += totalPrice;
                 usedServices.services.push({
                     service_id: service.serviceId,
@@ -278,18 +290,21 @@ const Cart = () => {
             const selectedOption = service.rentalOptions?.find((opt) => opt.package_name === selectedPackage);
             const duration = service.durations[item.cartItem] || 0;
 
-            if (!selectedOption || duration === 0) return total;
+            if (!selectedOption) return total;
 
             const packageType = getPackageType(selectedPackage);
 
             let itemTotal = 0;
             if (packageType === "hour") {
+                // Dịch vụ theo giờ: chỉ tính nếu có duration > 0
+                if (duration === 0) return total;
+
                 const minimumHours = selectedOption.minimum_hours || 1;
                 const actualHours = Math.max(duration, minimumHours);
-
                 itemTotal = selectedOption.price * actualHours;
 
             } else if (packageType === "date" || packageType === "recurring") {
+                // Dịch vụ theo ngày/tuần: lấy giá gốc, không cần duration
                 itemTotal = selectedOption.price;
             }
 
@@ -669,6 +684,10 @@ const Cart = () => {
                                                                     </div>
                                                                 )}
 
+                                                                <div className="flex justify-between text-xs font-medium text-blue-600 mt-1">
+                                                                    <span>Thành tiền:</span>
+                                                                    <span>{itemSubtotal.toLocaleString("vi-VN")}đ</span>
+                                                                </div>
 
                                                             </div>
                                                         );
