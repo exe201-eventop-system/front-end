@@ -3,6 +3,10 @@
     {
       "source": "/api/provinces/:path*",
       "destination": "https://provinces.open-api.vn/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
