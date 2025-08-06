@@ -11,6 +11,8 @@ import userReducer from './User/userSlice';
 import supplierReducer from './Supplier/supplierSlice';
 import feedbackReducer from './Cart/feedbackSlice';
 import dashboardReducer from './Dashboard/dashboardSlice';
+import categoryReducer from './Category/categorySlice';
+import packagesReducer from './Pagekages/packagesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +28,8 @@ export const store = configureStore({
     supplier: supplierReducer,
     feedback: feedbackReducer,
     dashboard: dashboardReducer,
+    category: categoryReducer,
+    packages: packagesReducer,
   },
 });
 

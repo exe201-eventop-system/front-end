@@ -80,7 +80,7 @@ function getAnalyticsDataFromResponse(response: any) {
     const leastRatedServices = (response.least_rated_service && response.least_rated_service.length > 0)
         ? response.least_rated_service.map((s: any) => ({
             name: s.service_name,
-            negative_feedback_count: s.negative_feedback_count,
+            rental_count: s.uses_count,
         }))
         : [];
     return {
@@ -177,7 +177,7 @@ const Analytics = () => {
                     </table>
                 </div>
                 <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Dịch vụ bị đánh giá thấp nhất</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Dịch vụ được thuê ít nhất</h3>
                     <table className="min-w-full text-left text-sm">
                         <thead>
                             <tr>
@@ -189,7 +189,7 @@ const Analytics = () => {
                             {least_rated_services.length === 0 ? <tr><td colSpan={2}>Không có dữ liệu</td></tr> : least_rated_services.map((service: any, idx: number) => (
                                 <tr key={idx}>
                                     <td className="py-2 px-4">{service.name}</td>
-                                    <td className="py-2 px-4 font-bold">{service.negative_feedback_count}</td>
+                                    <td className="py-2 px-4 font-bold">0</td>
                                 </tr>
                             ))}
                         </tbody>
