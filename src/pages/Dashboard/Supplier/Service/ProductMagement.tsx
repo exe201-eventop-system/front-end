@@ -43,9 +43,7 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
   Visibility as ViewIcon,
-  Image as ImageIcon,
   CloudUpload as UploadIcon,
-  Edit as EditIcon
 } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
