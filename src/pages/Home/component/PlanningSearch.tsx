@@ -6,18 +6,10 @@ import NavButton from "../../../components/ui/Button";
 import { motion } from "framer-motion";
 import BackGroundHome from "../../../assets/BackGroundHome.jpg";
 
-type PlaningSearchProps = {
-  onSearch?: (value: string) => void;
-};
-
-const PlaningSearch = ({ onSearch }: PlaningSearchProps) => {
+const PlaningSearch = () => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
-  const handleSearch = () => {
-    if (onSearch) onSearch(searchText);
-  };
 
   const handleAIPlanningClick = () => {
     if (isAuthenticated) {
