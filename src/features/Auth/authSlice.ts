@@ -69,6 +69,12 @@ const authSlice = createSlice({
       }
       state.status = 'idle';
     },
+    clearDistricts: (state) => {
+      state.districts = [];
+    },
+    clearWards: (state) => {
+      state.wards = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -155,5 +161,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setAuthType, switchAuthType } = authSlice.actions;
+export const { logout, setAuthType, switchAuthType, clearDistricts, clearWards } = authSlice.actions;
 export default authSlice.reducer;

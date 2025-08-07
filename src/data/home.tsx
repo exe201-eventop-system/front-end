@@ -1,8 +1,8 @@
 import { FiAward, FiCheckCircle, FiDollarSign, FiGlobe, FiMessageSquare, FiSearch, FiShield } from "react-icons/fi";
 
 export const stats = [
-  { number: "20+", label: "Dịch vụ uy tính" },
-  { number: "30", label: "Nhà cung cấp đáng tin cậy" },
+  { number: "10+", label: "Dịch vụ uy tính" },
+  { number: "9+", label: "Nhà cung cấp đáng tin cậy" },
   { number: "98%", label: "Khách hàng hài lòng" },
   { number: "24/7", label: "Hỗ trợ khách hàng" },
 ];
@@ -32,11 +32,11 @@ export const howItWorks = [
 
 
 export const featuredCategories = [
-  { name: "Tiệc cưới", icon: "💒", count: "10+" },
-  { name: "Âm nhạc", icon: "🎤", count: "15+" },
-  { name: "Sinh nhật", icon: "🎂", count: "10+" },
-  { name: "Triển lãm", icon: "🎨", count: "4+" },
-  { name: "Lễ hội", icon: "🎉", count: "8+" }
+  { name: "Tiệc cưới", icon: "💒" },
+  { name: "Âm nhạc", icon: "🎤" },
+  { name: "Sinh nhật", icon: "🎂" },
+  { name: "Triển lãm", icon: "🎨" },
+  { name: "Lễ hội", icon: "🎉" }
 ];
 
 export const whyChooseUs = [

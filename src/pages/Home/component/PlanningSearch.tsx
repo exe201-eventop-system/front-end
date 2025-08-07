@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../features/store";
 import NavButton from "../../../components/ui/Button";
 import { motion } from "framer-motion";
 import BackGroundHome from "../../../assets/BackGroundHome.jpg";
@@ -9,9 +12,35 @@ type PlaningSearchProps = {
 
 const PlaningSearch = ({ onSearch }: PlaningSearchProps) => {
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const handleSearch = () => {
     if (onSearch) onSearch(searchText);
+  };
+
+  const handleAIPlanningClick = () => {
+    if (isAuthenticated) {
+      // Nếu đã đăng nhập, chuyển đến trang planning với modal AI mở sẵn
+      navigate("/planning?openAI=true");
+    } else {
+      // Nếu chưa đăng nhập, chuyển đến trang đăng nhập
+      navigate("/auth?redirect=/planning?openAI=true");
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchText.trim()) {
+      // Chuyển đến trang Services với search term
+      navigate(`/services?search=${encodeURIComponent(searchText.trim())}`);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit(e);
+    }
   };
 
   return (
@@ -47,22 +76,24 @@ const PlaningSearch = ({ onSearch }: PlaningSearchProps) => {
 
           {/* Search Bar + Button */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8">
-            <input
-              type="text"
-              placeholder="Tìm dịch vụ sự kiện..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="px-6 py-3 rounded-full w-full md:w-96 focus:outline-none text-gray-800 shadow-inner text-base font-medium 
-              focus:ring-2 focus:ring-blue-400 transition-all duration-300"
-            />
-            <NavButton
-              color="purple-white"
-              to="/home/component/AIPlanning"
-              isActive={true}
-              onClick={handleSearch}
-            >
-              Lên kế hoạch cùng AI
-            </NavButton>
+            <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
+              <input
+                type="text"
+                placeholder="Tìm dịch vụ sự kiện..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="px-6 py-3 rounded-full w-full md:w-96 focus:outline-none text-gray-800 shadow-inner text-base font-medium 
+                focus:ring-2 focus:ring-blue-400 transition-all duration-300"
+              />
+              <NavButton
+                color="purple-white"
+                isActive={true}
+                onClick={handleAIPlanningClick}
+              >
+                Lên kế hoạch cùng AI
+              </NavButton>
+            </form>
           </div>
         </div>
       </motion.div>
