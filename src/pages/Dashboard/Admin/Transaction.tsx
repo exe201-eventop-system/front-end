@@ -94,7 +94,7 @@ const Transaction: React.FC = () => {
                                                         <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">{tran.status || '-'}</span>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-2 border">{new Date(tran.createdAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</td>
+                                                <td className="px-4 py-2 border">{new Date(new Date(tran.createdAt).getTime() + 7 * 60 * 60 * 1000).toLocaleString('vi-VN')}</td>
                                             </tr>
                                             {openRows.includes(tran.orderCode) && (
                                                 <tr>
@@ -124,7 +124,7 @@ const Transaction: React.FC = () => {
                                                                                 <td className="px-2 py-1 border text-blue-700">
                                                                                     {item.unitPrice?.toLocaleString() || '-'}
                                                                                 </td>
-                                                                                <td className="px-2 py-1 border">{new Date(item.createdAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</td>
+                                                                                <td className="px-2 py-1 border">{new Date(new Date(item.createdAt).getTime() + 7 * 60 * 60 * 1000).toLocaleString('vi-VN')}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
