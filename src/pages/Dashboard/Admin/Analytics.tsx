@@ -189,7 +189,7 @@ const Analytics = () => {
                             {least_rated_services.length === 0 ? <tr><td colSpan={2}>Không có dữ liệu</td></tr> : least_rated_services.map((service: any, idx: number) => (
                                 <tr key={idx}>
                                     <td className="py-2 px-4">{service.name}</td>
-                                    <td className="py-2 px-4 font-bold">0</td>
+                                    <td className="py-2 px-4 font-bold">{service.rental_count}</td>
                                 </tr>
                             ))}
                         </tbody>
