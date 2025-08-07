@@ -104,7 +104,7 @@ const Service = () => {
                 className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${selected_image_index === index ? 'border-purple-500' : 'border-transparent'
                   }`}
               >
-                <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                <img src={image.url} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
