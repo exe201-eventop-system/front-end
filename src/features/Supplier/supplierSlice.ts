@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Suppliers } from '../../types/Supplier/Suppliers.type';
-import { getSuppliers, getScheduleSupplier } from './supplierThunks';
-import { ScheduleSupplier } from '../../types/Supplier/Supplier.type';
+import { getSuppliers, getScheduleSupplier, GetListSupplierNotAccept, ProcessSupplier } from './supplierThunks';
+import { ScheduleSupplier, SupplierProfileDTO } from '../../types/Supplier/Supplier.type';
 
 interface SupplierState {
     suppliers: Suppliers[];
@@ -13,6 +13,11 @@ interface SupplierState {
     scheduleSupplier: ScheduleSupplier[];
     scheduleLoading: boolean;
     scheduleError: string | null;
+    pendingSuppliers: SupplierProfileDTO[];
+    pendingLoading: boolean;
+    pendingError: string | null;
+    processLoading: boolean;
+    processError: string | null;
 }
 
 const initialState: SupplierState = {
@@ -25,6 +30,11 @@ const initialState: SupplierState = {
     scheduleSupplier: [],
     scheduleLoading: false,
     scheduleError: null,
+    pendingSuppliers: [],
+    pendingLoading: false,
+    pendingError: null,
+    processLoading: false,
+    processError: null,
 };
 
 const supplierSlice = createSlice({
@@ -59,6 +69,31 @@ const supplierSlice = createSlice({
             .addCase(getScheduleSupplier.rejected, (state, action) => {
                 state.scheduleLoading = false;
                 state.scheduleError = action.error.message ?? 'Đã xảy ra lỗi khi lấy lịch';
+            })
+            // GetListSupplierNotAccept cases
+            .addCase(GetListSupplierNotAccept.pending, (state) => {
+                state.pendingLoading = true;
+                state.pendingError = null;
+            })
+            .addCase(GetListSupplierNotAccept.fulfilled, (state, action) => {
+                state.pendingLoading = false;
+                state.pendingSuppliers = action.payload.data ?? [];
+            })
+            .addCase(GetListSupplierNotAccept.rejected, (state, action) => {
+                state.pendingLoading = false;
+                state.pendingError = action.error.message ?? 'Đã xảy ra lỗi khi lấy danh sách supplier';
+            })
+            // ProcessSupplier cases
+            .addCase(ProcessSupplier.pending, (state) => {
+                state.processLoading = true;
+                state.processError = null;
+            })
+            .addCase(ProcessSupplier.fulfilled, (state) => {
+                state.processLoading = false;
+            })
+            .addCase(ProcessSupplier.rejected, (state, action) => {
+                state.processLoading = false;
+                state.processError = action.error.message ?? 'Đã xảy ra lỗi khi xử lý supplier';
             });
     },
 });

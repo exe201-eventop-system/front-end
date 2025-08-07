@@ -26,7 +26,9 @@ const categorySlice = createSlice({
             })
             .addCase(getCategory.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload.data ? action.payload.data : null;
+                // API trả về { data: { categories: [...] } }
+                const responseData = action.payload.data as any;
+                state.data = responseData?.categories || responseData || null;
                 state.error = null;
             })
             .addCase(getCategory.rejected, (state, action) => {

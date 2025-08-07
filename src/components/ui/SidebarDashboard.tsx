@@ -78,6 +78,18 @@ const SidebarDashboard = () => {
       label: "Khách hàng",
       icon: <Users size={20} />,
     },
+    {
+      path: "/management-supplier",
+      label: "Nhà cung cấp",
+      icon: <UserRoundCog size={20} />,
+      roles: [UserRole.Inspector],
+    },
+    {
+      path: "/service-management",
+      label: "Dịch vụ",
+      icon: <CircleGauge size={20} />,
+      roles: [UserRole.Supplier],
+    },
   ];
 
   return (

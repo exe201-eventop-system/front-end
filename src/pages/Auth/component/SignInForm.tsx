@@ -13,7 +13,7 @@ import type { AppDispatch } from "../../../features/store";
 import { getUserRole, handleTokenStorage } from "../../../utils/jwt/JwtHelper";
 import { UserRole } from "../../../types/Auth/User.type";
 
-const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
+const LoginForm = ({ onSwitch, onSwitchToSupplier }: { onSwitch: () => void; onSwitchToSupplier?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,6 +60,8 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
           navigate("/dashboard", { replace: true });
         } else if (role === UserRole.Demo) {
           navigate("/transaction", { replace: true });
+        } else if (role === UserRole.Inspector) {
+          navigate("/management-supplier", { replace: true });
         }
       }
     } else {
@@ -147,12 +149,24 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
       </form>
 
       {/* Switch to Register */}
-      <p className="mt-4 text-sm text-black/35 text-center">
-        Bạn chưa có tài khoản?{" "}
-        <button onClick={onSwitch} className="underline">
-          Đăng ký
-        </button>
-      </p>
+      <div className="mt-4 space-y-2">
+        <p className="text-sm text-black/35 text-center">
+          Bạn chưa có tài khoản?{" "}
+          <button onClick={onSwitch} className="underline">
+            Đăng ký
+          </button>
+        </p>
+
+        <div className="text-center">
+          <span className="text-sm text-black/35">Hoặc </span>
+          <button
+            onClick={onSwitchToSupplier ? onSwitchToSupplier : onSwitch}
+            className="text-sm underline text-blue-400 hover:text-blue-300"
+          >
+            Đăng ký nhà cung cấp
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
