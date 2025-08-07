@@ -6,9 +6,7 @@ import {
   Calendar,
   ShoppingCart,
   Users,
-  PackageSearch,
   CircleGauge,
-  Newspaper,
   CreditCard,
   UserRoundCog,
   MessageSquareText,
@@ -68,18 +66,6 @@ const SidebarDashboard = () => {
       path: "/supplier/schedule",
       label: "Lịch đặt",
       icon: <Calendar size={20} />,
-      roles: [UserRole.Supplier],
-    },
-    {
-      path: "/supplier/management-service",
-      label: "Dịch vụ",
-      icon: <PackageSearch size={20} />,
-      roles: [UserRole.Supplier],
-    },
-    {
-      path: "/supplier/management-blog",
-      label: "Bài viết",
-      icon: <Newspaper size={20} />,
       roles: [UserRole.Supplier],
     },
     {
