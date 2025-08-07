@@ -27,7 +27,9 @@ const packagesSlice = createSlice({
             })
             .addCase(getPackages.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload.data ? action.payload.data : null;
+                // API trả về { data: { structures: [...] } }
+                const responseData = action.payload.data as any;
+                state.data = responseData?.structures || responseData || null;
                 state.error = null;
             })
             .addCase(getPackages.rejected, (state, action) => {

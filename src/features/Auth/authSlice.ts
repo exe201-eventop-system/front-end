@@ -18,7 +18,7 @@ interface AuthState {
   error: string | null;
   user: UserProfile;
   errorMessage: string | null;
-  authType: "login" | "register";
+  authType: "login" | "register" | "supplier";
   provinces: { code: number; name: string }[];
   districts: { code: number; name: string }[];
   wards: { code: number; name: string }[];
@@ -60,12 +60,19 @@ const authSlice = createSlice({
     },
     switchAuthType: (
       state,
-      action: PayloadAction<"login" | "register" | undefined>
+      action: PayloadAction<"login" | "register" | "supplier" | undefined>
     ) => {
       if (action.payload) {
         state.authType = action.payload;
       } else {
-        state.authType = state.authType === "login" ? "register" : "login";
+        // Cycle through: login -> register -> supplier -> login
+        if (state.authType === "login") {
+          state.authType = "register";
+        } else if (state.authType === "register") {
+          state.authType = "supplier";
+        } else {
+          state.authType = "login";
+        }
       }
       state.status = 'idle';
     },

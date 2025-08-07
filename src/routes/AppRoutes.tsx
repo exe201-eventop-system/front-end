@@ -34,6 +34,7 @@ import Feedback from "../pages/Dashboard/Admin/Feedback.tsx";
 import BlogManagement from "../pages/Dashboard/Supplier/Blog/BlogManagement.tsx";
 import UserManagement from "../pages/Dashboard/Admin/UserManagement.tsx";
 import ProductManagement from "../pages/Dashboard/Supplier/Service/ProductMagement.tsx";
+import ManagementSupplier from "../pages/Dashboard/Inspector/ManagementSuplier.tsx";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -93,6 +94,16 @@ const AppRoutes: React.FC = () => {
             <MainLayout>
               <Blog />
             </MainLayout>
+          }
+        />
+        <Route
+          path="/service-management"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.Supplier]}>
+              <DashboardLayout>
+                <ProductManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -191,6 +202,16 @@ const AppRoutes: React.FC = () => {
             <ProtectedRoute allowedRoles={[UserRole.Admin]}>
               <DashboardLayout>
                 <UserManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/management-supplier"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.Inspector]}>
+              <DashboardLayout>
+                <ManagementSupplier />
               </DashboardLayout>
             </ProtectedRoute>
           }

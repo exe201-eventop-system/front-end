@@ -90,3 +90,47 @@ export enum UsedServiceStatus {
   Registered,
   Returned
 }
+
+export interface CreateProductFormDTO {
+  name: string;               // ProductName
+  description: string;
+  thumbnail?: File | null;
+  category_id: string;        // Guid dạng string
+  location: string;
+  packages: string;           // JSON.stringify([...]) - dạng string, không phải object
+}
+export interface UploadProductImageFormDTO {
+  productId: string;         // Guid dạng string
+  thumbnail?: File;          // File đại diện (optional)
+  images: File[];
+}
+export interface ProductSummaryItems {
+  id: string;
+  name: string;
+  description: string;
+  thumbnail: string;
+  category: string;
+  package: rentalOption[];
+  images: string[];
+}
+export interface CreateProductCommand {
+  name?: string;
+  description?: string;
+  category_id: string; // Guid dạng string
+  location?: string;
+  packages: ProductPackage[];
+}
+export interface ProductPackage {
+  packageStructure: string; // Guid dạng string
+  price: number;
+  overtimePrice: number;
+  minimumHour: number;
+}
+export interface UploadedImage {
+  id: string;   // Guid dạng chuỗi
+  url: string;  // URL của ảnh
+}
+export interface DeleteProductResult {
+  old_item_id: string;  // Guid tương ứng string
+  removed: boolean;
+}
