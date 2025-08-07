@@ -11,6 +11,10 @@ import {
   signUp,
 } from "../../../features/Auth/authThunks";
 import {
+  clearDistricts,
+  clearWards,
+} from "../../../features/Auth/authSlice";
+import {
   RegisterRequest,
   Address,
   RegisterRequestInput,
@@ -83,6 +87,9 @@ const RegisterForm = ({
         hamlet: "",
       });
       dispatch(fetchDistricts(code));
+      // Clear districts and wards when province changes
+      dispatch(clearDistricts());
+      dispatch(clearWards());
     } else {
       setAddress({
         province: "",
@@ -97,14 +104,18 @@ const RegisterForm = ({
     const districtCode = e.target.value;
     const code = +districtCode;
     const district = districts.find((d) => d.code === code);
-    if (district) {
+    if (district && address.province) {
       setAddress((prev) => ({
         ...prev,
         district: districtCode,
         ward: "",
         hamlet: "",
       }));
-      dispatch(fetchWards(code));
+      // Truyền cả provinceCode và districtCode
+      dispatch(fetchWards({
+        provinceCode: +address.province,
+        districtCode: code
+      }));
     } else {
       setAddress((prev) => ({
         ...prev,

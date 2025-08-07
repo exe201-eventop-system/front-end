@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../features/store';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Search,
   X,
@@ -23,6 +23,7 @@ import {
 
 const ServiceList = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
 
   const { services, loading, error, filterUI, filter } = useSelector((state: RootState) => state.service);
   const { search_term, price_range } = useSelector(
@@ -38,6 +39,20 @@ const ServiceList = () => {
   });
 
   const allPackages = Array.from(new Set(services.content.flatMap((service: any) => (service.package || []).map((p: any) => p.package_name))));
+
+  // Xử lý search parameter từ URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchParam = urlParams.get('search');
+
+    if (searchParam && searchParam !== search_term) {
+      dispatch(setSearchTerm(searchParam));
+      // Xóa parameter khỏi URL để tránh conflict
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('search');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [location.search, dispatch, search_term]);
 
   useEffect(() => {
     dispatch(getServices({

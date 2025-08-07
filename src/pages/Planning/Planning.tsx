@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import CreateEventModal from "./component/CreateEventModal";
 import EventTabs from "./component/EventTabs";
@@ -15,6 +16,7 @@ import { toast } from "react-toastify";
 
 const Planning = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const { isPlanningModalOpen, totalOfPlannings } = useSelector((state: RootState) => state.planning);
   const [isAIModalOpen, setAIModalOpen] = useState(false);
   const [aiPrompt, setAIPrompt] = useState('');
@@ -26,6 +28,20 @@ const Planning = () => {
     dispatch(getPlanning({}));
     dispatch(getNumberPlaning());
   }, [dispatch]);
+
+  // Kiểm tra URL parameters để mở modal AI
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const openAI = urlParams.get('openAI');
+
+    if (openAI === 'true') {
+      setAIModalOpen(true);
+      // Xóa parameter khỏi URL để tránh mở lại khi refresh
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('openAI');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [location.search]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-purple-100">

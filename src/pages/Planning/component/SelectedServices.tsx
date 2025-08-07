@@ -35,7 +35,7 @@ const SelectedServices: React.FC<SelectedServicesProps> = ({
             >
               <div>
                 <p className="font-medium text-gray-800">{service.name}</p>
-                <p className="text-sm text-gray-600">{service.description}</p>
+                <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>
               </div>
               <div className="flex items-center gap-4">
                 <p className="font-medium text-blue-600">

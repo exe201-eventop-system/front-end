@@ -17,7 +17,6 @@ const Categories = () => {
                         >
                             <div className="text-4xl mb-2">{category.icon}</div>
                             <h3 className="font-semibold mb-1">{category.name}</h3>
-                            <p className="text-sm text-gray-600">{category.count} dịch vụ</p>
                         </motion.div>
                     ))}
                 </div>

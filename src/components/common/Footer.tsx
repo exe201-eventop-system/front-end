@@ -64,7 +64,7 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-3 text-gray-300">
                 <FaPhoneAlt className="w-4 h-4" />
-                <span>+84 123 456 789</span>
+                <span>+84 372 498 291</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <FaEnvelope className="w-4 h-4" />
@@ -72,7 +72,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <FaMapMarkerAlt className="w-4 h-4" />
-                <span>123 Đường ABC, TP.HCM</span>
+                <span>Long Thạnh Mỹ, Thủ Đức, TP.HCM</span>
               </div>
             </div>
           </motion.div>
@@ -152,7 +152,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-purple-500/20">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400">
-              © 2024 EventTop. Tất cả quyền được bảo lưu.
+              © 2005 EventTop. Tất cả quyền được bảo lưu.
             </p>
             <div className="flex space-x-6">
               {socialLinks.map((social, index) => (

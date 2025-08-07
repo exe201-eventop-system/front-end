@@ -1,10 +1,9 @@
-
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 import logo from "../../../assets/logo.png";
 import { signIn } from "../../../features/Auth/authThunks";
@@ -17,6 +16,7 @@ import { UserRole } from "../../../types/Auth/User.type";
 const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<
@@ -39,18 +39,28 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
     const result = await dispatch(signIn(data));
 
     if (signIn.fulfilled.match(result)) {
-      handleTokenStorage(result.payload.data?.access_token ?? "")
+      handleTokenStorage(result.payload.data?.access_token ?? "");
       setStatus("success");
       const role = getUserRole();
 
-      if (role === UserRole.Customer) {
-        navigate("/", { replace: true });
-      } else if (role === UserRole.Supplier) {
-        navigate("/supplier/dashboard", { replace: true });
-      } else if (role === UserRole.Admin) {
-        navigate("/dashboard", { replace: true });
-      }else if (role === UserRole.Demo) {
-        navigate("/dashboard", { replace: true });
+      // Kiểm tra xem có redirect URL không
+      const urlParams = new URLSearchParams(location.search);
+      const redirectUrl = urlParams.get("redirect");
+
+      if (redirectUrl) {
+        // Nếu có redirect URL, chuyển đến đó
+        navigate(redirectUrl, { replace: true });
+      } else {
+        // Nếu không có, chuyển theo role như cũ
+        if (role === UserRole.Customer) {
+          navigate("/", { replace: true });
+        } else if (role === UserRole.Supplier) {
+          navigate("/supplier/dashboard", { replace: true });
+        } else if (role === UserRole.Admin) {
+          navigate("/dashboard", { replace: true });
+        } else if (role === UserRole.Demo) {
+          navigate("/transaction", { replace: true });
+        }
       }
     } else {
       setStatus("error");
@@ -59,7 +69,6 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
       // XÓA: logic OTP
     }
   };
-
 
   return (
     <div className="text-white">
@@ -74,7 +83,6 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
         Chào mừng trở lại
       </h2>
 
-
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Email/Phone */}
         <div className="relative mb-2">
@@ -85,7 +93,9 @@ const LoginForm = ({ onSwitch }: { onSwitch: () => void }) => {
             className="w-full text-black bg-[#fdfdfd] p-2 mb-1 rounded-lg border border-white/20 focus:outline-none focus:border-none focus:ring-0"
           />
           {errors.phone_number && (
-            <p className="text-red-400 text-sm mb-4">{errors.phone_number.message}</p>
+            <p className="text-red-400 text-sm mb-4">
+              {errors.phone_number.message}
+            </p>
           )}
         </div>
 

@@ -110,28 +110,27 @@ export const fetchDistricts = createAsyncThunk<District[], number>(
   }
 );
 
-export const fetchWards = createAsyncThunk<Ward[], number>(
+export const fetchWards = createAsyncThunk<Ward[], { provinceCode: number; districtCode: number }>(
   "location/fetchWards",
-  async (districtCode, { rejectWithValue }) => {
+  async ({ provinceCode, districtCode }, { rejectWithValue }) => {
     try {
       // Sử dụng GitHub API cho wards
       const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
 
       const data = response.data;
       if (data && Array.isArray(data)) {
-        // Tìm district trong tất cả provinces
-        for (const province of data) {
-          if (province.Districts) {
-            for (const district of province.Districts) {
-              if (district.Wards) {
-                const wards = district.Wards.map((item: any, index: number) => ({
-                  code: index + 1,
-                  name: item.Name,
-                  districtCode: districtCode
-                }));
-                return wards;
-              }
-            }
+        // Tìm province dựa trên provinceCode
+        const province = data[provinceCode - 1]; // provinceCode bắt đầu từ 1
+        if (province && province.Districts) {
+          // Tìm district dựa trên districtCode
+          const district = province.Districts[districtCode - 1]; // districtCode bắt đầu từ 1
+          if (district && district.Wards) {
+            const wards = district.Wards.map((item: any, index: number) => ({
+              code: index + 1,
+              name: item.Name,
+              districtCode: districtCode
+            }));
+            return wards;
           }
         }
       }
