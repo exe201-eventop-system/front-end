@@ -22,7 +22,7 @@ export interface Service {
   thumbnail: string;
   category: string;
   location: string;
-  images?: ImageItem[];
+  images?: string[];
   packages?: rentalOption[];
   supplier: Supplier;
   rating: number;
@@ -133,9 +133,4 @@ export interface UploadedImage {
 export interface DeleteProductResult {
   old_item_id: string;  // Guid tương ứng string
   removed: boolean;
-}
-export interface ImageItem {
-  id: string;      // GUID dạng chuỗi
-  order: number;   // Số thứ tự (có thể dùng cho sắp xếp)
-  url: string;     // URL ảnh
 }
