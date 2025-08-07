@@ -113,7 +113,6 @@ const Transaction: React.FC = () => {
                                                                             <th className="px-2 py-1 border">Tên dịch vụ</th>
                                                                             <th className="px-2 py-1 border">Nhà cung cấp</th>
                                                                             <th className="px-2 py-1 border">Đơn giá</th>
-                                                                            <th className="px-2 py-1 border">Ngày tạo</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -124,7 +123,6 @@ const Transaction: React.FC = () => {
                                                                                 <td className="px-2 py-1 border text-blue-700">
                                                                                     {item.unitPrice?.toLocaleString() || '-'}
                                                                                 </td>
-                                                                                <td className="px-2 py-1 border">{new Date(new Date(item.createdAt).getTime() + 7 * 60 * 60 * 1000).toLocaleString('vi-VN')}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
